@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:nexus_versus/app/modules/card_list/controllers/card_list_controller.dart';
+import 'package:nexus_versus/app/modules/debug_build/controllers/debug_build_controller.dart';
 import 'package:nexus_versus/app/modules/home/controllers/home_controller.dart';
 
 import '../controllers/layout_controller.dart';
@@ -15,6 +16,9 @@ class LayoutBinding extends Bindings {
     );
     Get.lazyPut<CardListController>(
           () => CardListController(),
+    );
+    Get.lazyPut<DebugBuildController>(
+          () => DebugBuildController(),
     );
   }
 }

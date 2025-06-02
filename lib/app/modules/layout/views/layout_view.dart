@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:nexus_versus/app/modules/card_list/views/card_list_view.dart';
+import 'package:nexus_versus/app/modules/debug_build/views/debug_build_view.dart';
 import 'package:nexus_versus/app/modules/home/views/home_view.dart';
 
 import '../controllers/layout_controller.dart';
@@ -35,6 +36,12 @@ class LayoutView extends GetView<LayoutController> {
                     isSelected: controller.currentIndex.value == 1,
                     onTap: () => controller.onTabChange(1),
                   ),
+                  _NavItem(
+                    icon: Icons.bug_report,
+                    label: 'Debug',
+                    isSelected: controller.currentIndex.value == 2,
+                    onTap: () => controller.onTabChange(2),
+                  ),
                 ],
               ),
               )
@@ -46,7 +53,8 @@ class LayoutView extends GetView<LayoutController> {
               controller: controller.tabController,
               children: const [
                 HomeView(),
-                CardListView()
+                CardListView(),
+                DebugBuildView()
               ],
             ),
           ),

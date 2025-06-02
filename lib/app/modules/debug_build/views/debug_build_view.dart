@@ -4,11 +4,14 @@ import 'package:nexus_versus/app/data/card_game/spell_card_data/crows_party.dart
 import 'package:nexus_versus/app/data/card_game/spell_card_data/war_peace.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/black_crow.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/red_cowboy.dart';
+import 'package:nexus_versus/app/models/card_model.dart';
 import 'package:nexus_versus/app/models/spell_card_model.dart';
 import 'package:nexus_versus/app/models/unit_card_model.dart';
 import 'package:nexus_versus/app/modules/debug_build/controllers/debug_build_controller.dart';
 import 'package:nexus_versus/app/widgets/spell_card.dart';
+import 'package:nexus_versus/app/widgets/spell_card_onbattle.dart';
 import 'package:nexus_versus/app/widgets/unit_card.dart';
+import 'package:nexus_versus/app/widgets/unit_card_onbattle.dart';
 
 class DebugBuildView extends GetView<DebugBuildController> {
   const DebugBuildView({super.key});
@@ -20,9 +23,8 @@ class DebugBuildView extends GetView<DebugBuildController> {
 
     const double cardWidth = 150;
     const double cardOffset = 60.0;
+    const double cardWidthOnbattle = 100;
     final cardList = controller.cardList;
-    final int cardCount = cardList.length;
-    final double totalWidth = (cardCount - 1) * cardOffset + cardWidth;
 
     return Scaffold(
       appBar: AppBar(
@@ -36,41 +38,72 @@ class DebugBuildView extends GetView<DebugBuildController> {
           Align(
             alignment: Alignment.topCenter,
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Obx(
-                      ()=> SizedBox(
-                        height: screenHeight * 0.75,
-                        child: cardList[controller.selectedCardIndex.value] is UnitCardModel
-                            ? UnitCard(
-                          isSmall: false,
-                          unitCardModel: cardList[controller.selectedCardIndex.value] as UnitCardModel,
-                        )
-                            : SpellCard(
-                          isSmall: false,
-                          spellCardModel: cardList[controller.selectedCardIndex.value] as SpellCardModel,
+                // /// Lá bài được chọn
+                // Obx(() => SizedBox(
+                //   height: screenHeight * 0.6,
+                //   child: cardList[controller.selectedCardIndex.value] is UnitCardModel
+                //       ? UnitCard(
+                //     isSmall: false,
+                //     unitCardModel: cardList[controller.selectedCardIndex.value] as UnitCardModel,
+                //   )
+                //       : SpellCard(
+                //     isSmall: false,
+                //     spellCardModel: cardList[controller.selectedCardIndex.value] as SpellCardModel,
+                //   ),
+                // )),
+                //
+                // const SizedBox(height: 16),
+
+                /// Hàng gồm 5 ô
+                Obx(() => Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    final card = controller.onField[index];
+                    return GestureDetector(
+                      onTap: () => controller.placeCardOnField(index),
+                      child: Container(
+                        width: cardWidthOnbattle,
+                        height: cardWidthOnbattle * (8/5),
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade600, width: 2),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.grey.shade200,
                         ),
+                        child: card == null
+                            ? Center(child: Text("Ô ${index + 1}"))
+                            : card is UnitCardModel
+                            ? UnitCardOnBattle(unitCardModel: card)
+                            : SpellCardOnBattle(spellCardModel: card as SpellCardModel),
                       ),
-                )
+                    );
+                  }),
+                )),
               ],
             ),
           ),
 
           /// Stack lá bài ở giữa phía dưới màn hình
-          Positioned(
-            bottom: 0,
-            left: (screenWidth - totalWidth) / 2,
-            child: SizedBox(
-              width: totalWidth,
-              height: screenHeight * 0.4,
-              child: Obx(() {
-                final cardList = controller.cardList;
-                return Stack(
+          Obx(() {
+            final cardList = controller.cardList;
+            final int cardCount = cardList.length;
+            final double totalWidth = (cardCount - 1) * cardOffset + cardWidth;
+            return Positioned(
+              bottom: 0,
+              left: (screenWidth - totalWidth) / 2,
+              child: SizedBox(
+                width: totalWidth,
+                height: screenHeight * 0.3,
+                child: Stack(
                   children: List.generate(
-                    cardCount,
+                    cardList.length,
                         (index) {
                       final card = cardList[index];
                       final isHovered = controller.hoveredCardIndex.value == index;
                       final isSelected = controller.selectedCardIndex.value == index;
+                      if (card == null) return const SizedBox();
                       final cardWidget = card is UnitCardModel
                           ? UnitCard(isSmall: true, unitCardModel: card)
                           : SpellCard(isSmall: true,spellCardModel: card as SpellCardModel);
@@ -87,8 +120,8 @@ class DebugBuildView extends GetView<DebugBuildController> {
                               duration: const Duration(milliseconds: 200),
                               transform: Matrix4.translationValues(0, isHovered | isSelected ? -40 : 0, 0),
                               child: SizedBox(
-                                width: cardWidth,
-                                child: cardWidget
+                                  width: cardWidth,
+                                  child: cardWidget
                               ),
                             ),
                           ),
@@ -96,12 +129,14 @@ class DebugBuildView extends GetView<DebugBuildController> {
                       );
                     },
                   ),
-                );
-              }),
-            ),
-          ),
+                )
+              ),
+            );
+          })
         ],
       ),
     );
   }
 }
+
+
