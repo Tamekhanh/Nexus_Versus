@@ -29,13 +29,13 @@ class UnitCard extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.all(isSmall? 2.0 : 8.0),
+            padding: EdgeInsets.all(isSmall? 2.0 : 4.0),
             child: Column(
-              spacing: isSmall? 3: 8,
+              spacing: isSmall? 3: 6,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: isSmall? 3 : 12),
+                  padding: EdgeInsets.symmetric(horizontal: isSmall? 3 : 6),
                   decoration: BoxDecoration(
                     color: unitCardModel.cardSpecial,
                     borderRadius: BorderRadius.circular(isSmall ? 5 : 10),
@@ -73,9 +73,9 @@ class UnitCard extends StatelessWidget {
                         children: List.generate(
                           unitCardModel.level,
                               (index) => Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                                size: isSmall ? 8 : 24,
+                            Icons.star,
+                            color: Colors.yellow,
+                            size: isSmall ? 8 : 24,
                           ),
                         ),
                       ),
@@ -105,7 +105,7 @@ class UnitCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular( isSmall ? 4: 8),
                         ),
                         child: Padding(
-                          padding: EdgeInsets.all(isSmall ? 3 : 8.0),
+                          padding: EdgeInsets.all(isSmall ? 3 : 6),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -120,8 +120,8 @@ class UnitCard extends StatelessWidget {
                               Text(
                                   unitCardModel.description,
                                   style: TextStyle(
-                                    fontSize: isSmall ? 5 : 14,
-                                    color: Colors.black,
+                                    fontSize: isSmall ? 5 : ((MediaQuery.sizeOf(context).width* 0.005)+(MediaQuery.sizeOf(context).height* 0.007)),
+                                    color: Colors.black54,
                                   )
                               ),
                             ],

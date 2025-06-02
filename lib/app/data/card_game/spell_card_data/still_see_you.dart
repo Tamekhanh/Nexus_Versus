@@ -10,5 +10,5 @@ final StillSeeYou = SpellCardModel(
   onPlace: (){},
   onAttack: () {},
   cardSpecial: Color(0xFF001157),
-  series: ["Myth", "Lovecraft"],
+  series: ["Myth"],
 );

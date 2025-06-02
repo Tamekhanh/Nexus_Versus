@@ -28,13 +28,13 @@ class SpellCard extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.all(isSmall? 2.0 : 8.0),
+            padding: EdgeInsets.all(isSmall? 2.0 : 4.0),
             child: Column(
-              spacing: isSmall? 3: 8,
+              spacing: isSmall? 3: 6,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: isSmall? 3 : 12),
+                  padding: EdgeInsets.symmetric(horizontal: isSmall? 3 : 6),
                   decoration: BoxDecoration(
                     color: spellCardModel.cardSpecial,
                     borderRadius: BorderRadius.circular(isSmall ? 5 : 10),
@@ -81,7 +81,7 @@ class SpellCard extends StatelessWidget {
                       Container(
                         width: double.infinity,
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8), // Bo góc
+                          borderRadius: BorderRadius.circular(isSmall ? 3 : 8), // Bo góc
                           child: AspectRatio(
                             aspectRatio: 1,
                             child: Image.asset(
@@ -104,7 +104,7 @@ class SpellCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular( isSmall ? 4: 8),
                         ),
                         child: Padding(
-                          padding: EdgeInsets.all(isSmall ? 3 : 8.0),
+                          padding: EdgeInsets.all(isSmall ? 3 : 6),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -119,7 +119,7 @@ class SpellCard extends StatelessWidget {
                               Text(
                                   spellCardModel.description,
                                   style: TextStyle(
-                                    fontSize: isSmall ? 5 : 14,
+                                    fontSize: isSmall ? 5 : ((MediaQuery.sizeOf(context).width* 0.005)+(MediaQuery.sizeOf(context).height* 0.007)),
                                     color: Colors.black54,
                                   )
                               ),

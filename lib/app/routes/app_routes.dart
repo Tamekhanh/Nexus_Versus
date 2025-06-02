@@ -6,6 +6,7 @@ abstract class Routes {
   static const HOME = _Paths.HOME;
   static const DEBUG_BUILD = _Paths.DEBUG_BUILD;
   static const LAYOUT = _Paths.LAYOUT;
+  static const CARD_LIST = _Paths.CARD_LIST;
 }
 
 abstract class _Paths {
@@ -13,4 +14,5 @@ abstract class _Paths {
   static const HOME = '/home';
   static const DEBUG_BUILD = '/debug-build';
   static const LAYOUT = '/layout';
+  static const CARD_LIST = '/card-list';
 }
