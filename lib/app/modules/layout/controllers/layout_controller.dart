@@ -9,7 +9,7 @@ class LayoutController extends GetxController with GetSingleTickerProviderStateM
   @override
   void onInit() {
     super.onInit();
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: 4, vsync: this);
     tabController.addListener(() {
       if (!tabController.indexIsChanging) {
         currentIndex.value = tabController.index;

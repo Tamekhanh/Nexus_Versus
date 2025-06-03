@@ -1,3 +1,4 @@
+import 'package:nexus_versus/app/data/card_game/spell_card_data/beautiful_day.dart';
 import 'package:nexus_versus/app/data/card_game/spell_card_data/crows_party.dart';
 import 'package:nexus_versus/app/data/card_game/spell_card_data/still_see_you.dart';
 import 'package:nexus_versus/app/data/card_game/spell_card_data/war_peace.dart';
@@ -13,5 +14,6 @@ Map<CardModel,int> debugData = {
   BlackCrow : 1,
   RedCowBoy : 1,
   GodHand : 1,
-  StillSeeYou : 1
+  StillSeeYou : 1,
+  BeautifulDay : 1
 };

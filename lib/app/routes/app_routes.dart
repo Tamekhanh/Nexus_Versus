@@ -7,6 +7,7 @@ abstract class Routes {
   static const DEBUG_BUILD = _Paths.DEBUG_BUILD;
   static const LAYOUT = _Paths.LAYOUT;
   static const CARD_LIST = _Paths.CARD_LIST;
+  static const DECK = _Paths.DECK;
 }
 
 abstract class _Paths {
@@ -15,4 +16,5 @@ abstract class _Paths {
   static const DEBUG_BUILD = '/debug-build';
   static const LAYOUT = '/layout';
   static const CARD_LIST = '/card-list';
+  static const DECK = '/deck';
 }

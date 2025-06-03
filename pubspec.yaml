@@ -60,6 +60,7 @@ flutter:
   assets:
     - image_card/unit_card/
     - image_card/spell_card/
+    - assets/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

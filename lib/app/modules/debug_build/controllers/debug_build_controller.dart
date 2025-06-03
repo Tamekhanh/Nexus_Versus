@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:nexus_versus/app/data/debug/debug_data.dart';
 import 'package:nexus_versus/app/models/card_model.dart';
+import 'package:nexus_versus/app/models/spell_card_model.dart';
+import 'package:nexus_versus/app/models/unit_card_model.dart';
 
 class DebugBuildController extends GetxController {
   //TODO: Implement DebugBuildController
@@ -18,16 +20,19 @@ class DebugBuildController extends GetxController {
     cardList.value = debugData.entries
         .expand((entry) => List.generate(entry.value, (_) => entry.key))
         .toList();
-    onField.value = List.filled(5, null);
+    onField.value = List.filled(10, null);
   }
 
   void placeCardOnField(int fieldIndex) {
     final selectedIndex = selectedCardIndex.value;
-
     if (selectedIndex == -1 || onField[fieldIndex] != null) return;
 
     final selected = cardList[selectedIndex];
     if (selected == null) return;
+
+    // Kiểm tra đúng loại thẻ cho từng hàng
+    if (fieldIndex <= 4 && selected is! UnitCardModel) return; // Hàng UnitCard
+    if (fieldIndex >= 5 && selected is! SpellCardModel) return; // Hàng SpellCard
 
     onField[fieldIndex] = selected;
     cardList.removeAt(selectedIndex);

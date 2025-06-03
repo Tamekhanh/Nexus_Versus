@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class InBattleModel extends UnitCardModel {
   final int currentHealthPoints;
   final int currentAttackPower;
+  final int attemt = 1;
 
   InBattleModel({
     required String id,
