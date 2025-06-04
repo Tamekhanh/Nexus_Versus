@@ -65,97 +65,103 @@ class DebugBuildView extends GetView<DebugBuildController> {
                           // const SizedBox(height: 16),
 
                           /// Hàng gồm 5 ô
-                          Obx(() => Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // Hàng trên: chỉ chứa UnitCardModel
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: List.generate(5, (index) {
-                                  final card = controller.onField[index];
-                                  return Column(
-                                    children: [
-                                      // TextButton(
-                                      //   onPressed: () {
-                                      //     controller.onField[index] = null;
-                                      //     controller.update();
-                                      //   },
-                                      //   child: Text("Delete ${index + 1}"),
-                                      // ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (controller.cardList[controller.selectedCardIndex.value] is UnitCardModel) {
-                                            controller.placeCardOnField(index,context);
-                                          }
-                                        },
-                                        child: Container(
-                                          width: cardWidthOnbattle,
-                                          height: cardWidthOnbattle * (8 / 5),
-                                          margin: const EdgeInsets.symmetric(horizontal: 12),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.grey.shade600, width: 2),
-                                            borderRadius: BorderRadius.circular(8),
-                                            color: Colors.transparent,
+                          Obx(() => SizedBox(
+                            height: screenHeight * 0.37,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Hàng trên: chỉ chứa UnitCardModel
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(5, (index) {
+                                    final card = controller.onField[index];
+                                    return Column(
+                                      children: [
+                                        // TextButton(
+                                        //   onPressed: () {
+                                        //     controller.onField[index] = null;
+                                        //     controller.update();
+                                        //   },
+                                        //   child: Text("Delete ${index + 1}"),
+                                        // ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            if (controller.cardList[controller.selectedCardIndex.value] is UnitCardModel) {
+                                              controller.placeCardOnField(index,context);
+                                            }
+                                          },
+                                          child: Container(
+                                            width: cardWidthOnbattle,
+                                            height: cardWidthOnbattle * (8 / 5),
+                                            margin: const EdgeInsets.symmetric(horizontal: 12),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey.shade600,
+                                                  width: 4
+                                              ),
+                                              borderRadius: BorderRadius.circular(8),
+                                              color: Colors.transparent,
+                                            ),
+                                            child: card is UnitCardModel
+                                                ? UnitCardOnBattle(unitCardModel: card)
+                                                : Center(child: Text("Ô ${index + 1}")),
                                           ),
-                                          child: card is UnitCardModel
-                                              ? UnitCardOnBattle(unitCardModel: card)
-                                              : Center(child: Text("Ô ${index + 1}")),
                                         ),
-                                      ),
-                                      if (card is UnitCardModel)
-                                        Column(
-                                          children: [
-                                            Text("HP: ${card.healthPoints}", style: const TextStyle(fontSize: 12)),
-                                            Text("ATK: ${card.attackPower}", style: const TextStyle(fontSize: 12)),
-                                          ],
-                                        ),
-                                    ],
-                                  );
-                                }),
-                              ),
+                                        if (card is UnitCardModel)
+                                          Column(
+                                            children: [
+                                              Text("HP: ${card.healthPoints}", style: const TextStyle(fontSize: 12)),
+                                              Text("ATK: ${card.attackPower}", style: const TextStyle(fontSize: 12)),
+                                            ],
+                                          ),
+                                      ],
+                                    );
+                                  }),
+                                ),
 
-                              // Hàng dưới: chỉ chứa SpellCardModel
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: List.generate(5, (index) {
-                                  final card = controller.onField[index + 5];
-                                  return Column(
-                                    children: [
-                                      // TextButton(
-                                      //   onPressed: () {
-                                      //     controller.onField[index + 5] = null;
-                                      //     controller.update();
-                                      //   },
-                                      //   child: Text("Delete ${index + 6}"),
-                                      // ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (controller.cardList[controller.selectedCardIndex.value] is SpellCardModel) {
-                                            controller.placeCardOnField(index + 5, context);
-                                          }
-                                        },
-                                        child: Container(
-                                          width: cardWidthOnbattle,
-                                          height: cardWidthOnbattle * (8 / 5),
-                                          margin: const EdgeInsets.symmetric(horizontal: 12),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.grey.shade600, width: 2),
-                                            borderRadius: BorderRadius.circular(8),
-                                            color: Colors.transparent,
+                                // Hàng dưới: chỉ chứa SpellCardModel
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(5, (index) {
+                                    final card = controller.onField[index + 5];
+                                    return Column(
+                                      children: [
+                                        // TextButton(
+                                        //   onPressed: () {
+                                        //     controller.onField[index + 5] = null;
+                                        //     controller.update();
+                                        //   },
+                                        //   child: Text("Delete ${index + 6}"),
+                                        // ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            if (controller.cardList[controller.selectedCardIndex.value] is SpellCardModel) {
+                                              controller.placeCardOnField(index + 5, context);
+                                            }
+                                          },
+                                          child: Container(
+                                            width: cardWidthOnbattle,
+                                            height: cardWidthOnbattle * (8 / 5),
+                                            margin: const EdgeInsets.symmetric(horizontal: 12),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(color: Colors.grey.shade600, width: 4),
+                                              borderRadius: BorderRadius.circular(8),
+                                              color: Colors.transparent,
+                                            ),
+                                            child: card is SpellCardModel
+                                                ? SpellCardOnBattle(spellCardModel: card)
+                                                : Center(child: Text("Ô ${index + 6}")),
                                           ),
-                                          child: card is SpellCardModel
-                                              ? SpellCardOnBattle(spellCardModel: card)
-                                              : Center(child: Text("Ô ${index + 6}")),
                                         ),
-                                      ),
-                                      // if (card is SpellCardModel)
-                                      //   Text("${card.name}", style: const TextStyle(fontSize: 12)),
-                                    ],
-                                  );
-                                }),
-                              ),
-                            ],
+                                        // if (card is SpellCardModel)
+                                        //   Text("${card.name}", style: const TextStyle(fontSize: 12)),
+                                      ],
+                                    );
+                                  }),
+                                ),
+                              ],
+                            ),
                           ))
                         ],
                       ),

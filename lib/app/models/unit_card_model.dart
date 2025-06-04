@@ -53,4 +53,11 @@ class UnitCardModel extends CardModel{
       onDead: onDead,
     );
   }
+
+  @override
+  Map<String, dynamic> toJson() {
+    final json = super.toJson();
+    json['type'] = 'unit';
+    return json;
+  }
 }

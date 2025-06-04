@@ -47,4 +47,11 @@ class SpellCardModel extends CardModel {
       onDead: onDead,
     );
   }
+
+  @override
+  Map<String, dynamic> toJson() {
+    final json = super.toJson();
+    json['type'] = 'spell';
+    return json;
+  }
 }

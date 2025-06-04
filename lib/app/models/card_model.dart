@@ -27,4 +27,15 @@ class CardModel {
       series: json['series'] != null ? List<String>.from(json['series']) : null,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'imageUrl': imageUrl,
+      'level': level,
+      'series': series,
+    };
+  }
 }

@@ -3,7 +3,7 @@ import 'package:nexus_versus/app/models/spell_card_model.dart';
 import 'package:nexus_versus/app/widgets/full_screen_image_overlay.dart';
 
 final StillSeeYou = SpellCardModel(
-  id: "unit003",
+  id: "spell003",
   name: "They Still See You",
   description: "In the shadows of the past, they still watch. This spell allows you to summon a unit from your graveyard, bringing back a fallen ally to fight once more.",
   imageUrl: "image_card/spell_card/they_can_see_you.png",
