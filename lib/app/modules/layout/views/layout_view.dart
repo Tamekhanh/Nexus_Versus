@@ -13,9 +13,9 @@ class LayoutView extends GetView<LayoutController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nexus Versus')
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Nexus Versus')
+      // ),
       body: Row(
         children: [
           Container(

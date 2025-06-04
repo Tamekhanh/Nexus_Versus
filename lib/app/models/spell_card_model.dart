@@ -3,9 +3,9 @@ import 'package:nexus_versus/app/models/card_model.dart';
 
 class SpellCardModel extends CardModel {
   final Color cardSpecial;
-  final VoidCallback? onPlace;
-  final VoidCallback? onAttack;
-  final VoidCallback? onDead;
+  void Function(BuildContext context)? onPlace;
+  void Function(BuildContext context)? onAttack;
+  void Function(BuildContext context)? onDead;
 
   SpellCardModel({
     required String id,
@@ -29,10 +29,10 @@ class SpellCardModel extends CardModel {
 
   factory SpellCardModel.fromJson(
       Map<String, dynamic> json,
-      VoidCallback onPlace,
-      VoidCallback onAttack,
+      void Function(BuildContext context)? onPlace,
+      void Function(BuildContext context)? onAttack,
       Color cardSpecial,
-      VoidCallback onDead,
+      void Function(BuildContext context)? onDead,
       ) {
     return SpellCardModel(
       id: json['id'],

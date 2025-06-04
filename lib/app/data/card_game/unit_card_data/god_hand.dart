@@ -10,8 +10,8 @@ final GodHand = UnitCardModel(
   level: 10,
   attackPower: 3000,
   healthPoints: 2000,
-  onPlace: (){},
-  onAttack: () {},
+  onPlace: (context){},
+  onAttack: (context) {},
   cardSpecial: Color(0xFF001157), // Brown color for God Hand
   series: ["Myth"],
 );

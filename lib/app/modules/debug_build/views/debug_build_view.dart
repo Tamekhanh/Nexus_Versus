@@ -31,121 +31,139 @@ class DebugBuildView extends GetView<DebugBuildController> {
         children: [
           /// Nội dung chính bên trên
 
-          Align(
-            alignment: Alignment.topCenter,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // /// Lá bài được chọn
-                // Obx(() => SizedBox(
-                //   height: screenHeight * 0.6,
-                //   child: cardList[controller.selectedCardIndex.value] is UnitCardModel
-                //       ? UnitCard(
-                //     isSmall: false,
-                //     unitCardModel: cardList[controller.selectedCardIndex.value] as UnitCardModel,
-                //   )
-                //       : SpellCard(
-                //     isSmall: false,
-                //     spellCardModel: cardList[controller.selectedCardIndex.value] as SpellCardModel,
-                //   ),
-                // )),
-                //
-                // const SizedBox(height: 16),
+          Column(
+            children: [
+              Expanded(
+                flex: 5,
+                  child: Placeholder()
+              ),
+              Expanded(
+                flex: 8,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: MediaQuery.sizeOf(context).width * 0.8,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // /// Lá bài được chọn
+                          // Obx(() => SizedBox(
+                          //   height: screenHeight * 0.6,
+                          //   child: cardList[controller.selectedCardIndex.value] is UnitCardModel
+                          //       ? UnitCard(
+                          //     isSmall: false,
+                          //     unitCardModel: cardList[controller.selectedCardIndex.value] as UnitCardModel,
+                          //   )
+                          //       : SpellCard(
+                          //     isSmall: false,
+                          //     spellCardModel: cardList[controller.selectedCardIndex.value] as SpellCardModel,
+                          //   ),
+                          // )),
+                          //
+                          // const SizedBox(height: 16),
 
-                /// Hàng gồm 5 ô
-                Obx(() => Column(
-                  children: [
-                    // Hàng trên: chỉ chứa UnitCardModel
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        final card = controller.onField[index];
-                        return Column(
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                controller.onField[index] = null;
-                                controller.update();
-                              },
-                              child: Text("Delete ${index + 1}"),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                if (controller.cardList[controller.selectedCardIndex.value] is UnitCardModel) {
-                                  controller.placeCardOnField(index);
-                                }
-                              },
-                              child: Container(
-                                width: cardWidthOnbattle,
-                                height: cardWidthOnbattle * (8 / 5),
-                                margin: const EdgeInsets.symmetric(horizontal: 12),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.shade600, width: 2),
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.grey.shade200,
-                                ),
-                                child: card is UnitCardModel
-                                    ? UnitCardOnBattle(unitCardModel: card)
-                                    : Center(child: Text("Ô ${index + 1}")),
+                          /// Hàng gồm 5 ô
+                          Obx(() => Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Hàng trên: chỉ chứa UnitCardModel
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(5, (index) {
+                                  final card = controller.onField[index];
+                                  return Column(
+                                    children: [
+                                      // TextButton(
+                                      //   onPressed: () {
+                                      //     controller.onField[index] = null;
+                                      //     controller.update();
+                                      //   },
+                                      //   child: Text("Delete ${index + 1}"),
+                                      // ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          if (controller.cardList[controller.selectedCardIndex.value] is UnitCardModel) {
+                                            controller.placeCardOnField(index,context);
+                                          }
+                                        },
+                                        child: Container(
+                                          width: cardWidthOnbattle,
+                                          height: cardWidthOnbattle * (8 / 5),
+                                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.grey.shade600, width: 2),
+                                            borderRadius: BorderRadius.circular(8),
+                                            color: Colors.transparent,
+                                          ),
+                                          child: card is UnitCardModel
+                                              ? UnitCardOnBattle(unitCardModel: card)
+                                              : Center(child: Text("Ô ${index + 1}")),
+                                        ),
+                                      ),
+                                      if (card is UnitCardModel)
+                                        Column(
+                                          children: [
+                                            Text("HP: ${card.healthPoints}", style: const TextStyle(fontSize: 12)),
+                                            Text("ATK: ${card.attackPower}", style: const TextStyle(fontSize: 12)),
+                                          ],
+                                        ),
+                                    ],
+                                  );
+                                }),
                               ),
-                            ),
-                            if (card is UnitCardModel)
-                              Column(
-                                children: [
-                                  Text("HP: ${card.healthPoints}", style: const TextStyle(fontSize: 12)),
-                                  Text("ATK: ${card.attackPower}", style: const TextStyle(fontSize: 12)),
-                                ],
-                              ),
-                          ],
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 32),
 
-                    // Hàng dưới: chỉ chứa SpellCardModel
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        final card = controller.onField[index + 5];
-                        return Column(
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                controller.onField[index + 5] = null;
-                                controller.update();
-                              },
-                              child: Text("Delete ${index + 6}"),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                if (controller.cardList[controller.selectedCardIndex.value] is SpellCardModel) {
-                                  controller.placeCardOnField(index + 5);
-                                }
-                              },
-                              child: Container(
-                                width: cardWidthOnbattle,
-                                height: cardWidthOnbattle * (8 / 5),
-                                margin: const EdgeInsets.symmetric(horizontal: 12),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.shade600, width: 2),
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.grey.shade200,
-                                ),
-                                child: card is SpellCardModel
-                                    ? SpellCardOnBattle(spellCardModel: card)
-                                    : Center(child: Text("Ô ${index + 6}")),
+                              // Hàng dưới: chỉ chứa SpellCardModel
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(5, (index) {
+                                  final card = controller.onField[index + 5];
+                                  return Column(
+                                    children: [
+                                      // TextButton(
+                                      //   onPressed: () {
+                                      //     controller.onField[index + 5] = null;
+                                      //     controller.update();
+                                      //   },
+                                      //   child: Text("Delete ${index + 6}"),
+                                      // ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          if (controller.cardList[controller.selectedCardIndex.value] is SpellCardModel) {
+                                            controller.placeCardOnField(index + 5, context);
+                                          }
+                                        },
+                                        child: Container(
+                                          width: cardWidthOnbattle,
+                                          height: cardWidthOnbattle * (8 / 5),
+                                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.grey.shade600, width: 2),
+                                            borderRadius: BorderRadius.circular(8),
+                                            color: Colors.transparent,
+                                          ),
+                                          child: card is SpellCardModel
+                                              ? SpellCardOnBattle(spellCardModel: card)
+                                              : Center(child: Text("Ô ${index + 6}")),
+                                        ),
+                                      ),
+                                      // if (card is SpellCardModel)
+                                      //   Text("${card.name}", style: const TextStyle(fontSize: 12)),
+                                    ],
+                                  );
+                                }),
                               ),
-                            ),
-                            if (card is SpellCardModel)
-                              Text("${card.name}", style: const TextStyle(fontSize: 12)),
-                          ],
-                        );
-                      }),
+                            ],
+                          ))
+                        ],
+                      ),
                     ),
-                  ],
-                ))
-              ],
-            ),
+                  ),
+                ),
+              ),
+            ],
           ),
 
           /// Stack lá bài ở giữa phía dưới màn hình
@@ -158,7 +176,7 @@ class DebugBuildView extends GetView<DebugBuildController> {
               left: (screenWidth - totalWidth) / 2,
               child: SizedBox(
                 width: totalWidth,
-                height: screenHeight * 0.3,
+                height: screenHeight * 0.27,
                 child: Stack(
                   children: List.generate(
                     cardList.length,
@@ -177,7 +195,7 @@ class DebugBuildView extends GetView<DebugBuildController> {
                           onExit: (_) => controller.hoveredCardIndex.value = -1,
                           child: GestureDetector(
                             onTap: () {
-                              controller.selectedCardIndex.value = index;
+                              controller.selectCard(index);
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),

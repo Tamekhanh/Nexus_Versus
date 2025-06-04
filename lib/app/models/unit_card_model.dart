@@ -5,9 +5,9 @@ class UnitCardModel extends CardModel{
   final int attackPower;
   final int healthPoints;
   final Color cardSpecial;
-  final VoidCallback? onPlace;
-  final VoidCallback? onAttack;
-  final VoidCallback? onDead;
+  void Function(BuildContext context)? onPlace;
+  void Function(BuildContext context)? onAttack;
+  void Function(BuildContext context)? onDead;
 
   UnitCardModel({
     required String id,
@@ -33,10 +33,10 @@ class UnitCardModel extends CardModel{
 
   factory UnitCardModel.fromJson(
       Map<String, dynamic> json,
-      VoidCallback onPlace,
-      VoidCallback onAttack,
+      void Function(BuildContext context)? onPlace,
+      void Function(BuildContext context)? onAttack,
       Color cardSpecial,
-      VoidCallback onDead,
+      void Function(BuildContext context)? onDead,
       ) {
     return UnitCardModel(
       id: json['id'],

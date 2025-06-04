@@ -10,14 +10,14 @@ final RedCowBoy = UnitCardModel(
   level: 5,
   attackPower: 1000,
   healthPoints: 1000,
-  onPlace: quickdraw("Red Cowboy"),
-  onAttack: () {},
+  onPlace: (context) {
+    quickdraw("Red Cowboy");
+  },
+  onAttack: (context) {},
   cardSpecial: Colors.redAccent,
   series: ["Cowboy"],
 );
 
-VoidCallback quickdraw(String caster) {
-  return () {
-    debugPrint('$caster active skill Quick Draw - Draw a card');
-  };
+void quickdraw(String caster) {
+  debugPrint('$caster active skill Quick Draw - Draw a card');
 }

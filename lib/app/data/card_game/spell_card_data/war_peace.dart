@@ -7,7 +7,7 @@ final WarAndPeace = SpellCardModel(
   description: "Forged in times of chaos, this spell symbolizes the delicate balance between destruction and harmony. When this spell is activated, increases the ATK of all allies by 1000 for one turn.",
   imageUrl: "image_card/spell_card/war_peace.png",
   level: 10,
-  onPlace: (){},
-  onAttack: () {},
+  onPlace: (context){},
+  onAttack: (context) {},
   series: ["Crow"],
 );

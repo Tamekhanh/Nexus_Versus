@@ -19,9 +19,9 @@ class InBattleModel extends UnitCardModel {
     this.currentHealthPoints = 0,
     this.currentAttackPower = 0,
     List<String>? series,
-    VoidCallback? onPlace,
-    VoidCallback? onAttack,
-    VoidCallback? onDead,
+    void Function(BuildContext context)? onPlace,
+    void Function(BuildContext context)? onAttack,
+    void Function(BuildContext context)? onDead,
     Color cardSpecial = Colors.blueGrey,
   }) : super(
           id: id,

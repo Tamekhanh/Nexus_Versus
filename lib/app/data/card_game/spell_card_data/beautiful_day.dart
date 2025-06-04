@@ -9,8 +9,8 @@ final BeautifulDay = SpellCardModel(
       "This spell grants you the blessing of clarity and preparation—draw two additional cards from your deck and ready yourself for the trials ahead.",
   imageUrl: "image_card/spell_card/beautiful_day.png",
   level: 12,
-  onPlace: (){},
-  onAttack: () {},
+  onPlace: (context){},
+  onAttack: (context) {},
   cardSpecial: Color(0xFFDFDFDF),
   series: ["Yokai"],
 );

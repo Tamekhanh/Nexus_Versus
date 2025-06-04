@@ -10,8 +10,8 @@ final BlackCrow = UnitCardModel(
   level: 4,
   attackPower: 2000,
   healthPoints: 1000,
-  onPlace: (){},
-  onAttack: () {},
+  onPlace: (context){},
+  onAttack: (context) {},
   cardSpecial: Colors.grey,
   series: ["Crow"],
 );

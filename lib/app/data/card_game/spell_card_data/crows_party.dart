@@ -8,8 +8,8 @@ final CrowsParty = SpellCardModel(
   description: "The crows gather under a moonless sky. When this spell is cast, all allied units gain +500 ATK for one turn — a deadly dance begins.",
   imageUrl: "image_card/spell_card/crows_party.png",
   level: 6,
-  onPlace: (){},
-  onAttack: () {},
+  onPlace: (context){},
+  onAttack: (context) {},
   cardSpecial: Colors.grey,
   series: ["Crow"],
 );
