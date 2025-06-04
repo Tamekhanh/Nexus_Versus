@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexus_versus/app/models/spell_card_model.dart';
-import 'package:nexus_versus/app/widgets/full_screen_image_overlay.dart';
+import 'package:nexus_versus/app/widgets/full_screen_image_text_shake.dart';
 
 final StillSeeYou = SpellCardModel(
   id: "spell003",
@@ -10,25 +10,21 @@ final StillSeeYou = SpellCardModel(
   level: 10,
   onPlace: (context) {
     // showFullScreenImage(context,"summon_effect/bigbird.png");
-    showFullScreenImage(context,"image_card/spell_card/they_can_see_you.png");
+    showFullScreenImage(
+        context,"image_card/spell_card/they_can_see_you.png",
+        text: Text(
+          "They Still See You",
+          style: TextStyle(
+            fontSize: MediaQuery.sizeOf(context).width * 0.075,
+            fontWeight: FontWeight.bold,
+            color: Colors.red,
+          ),
+        ),
+    );
   },
-  onAttack: (context) {},
+  onAttack: (context) {
+
+  },
   cardSpecial: Color(0xFF001157),
   series: ["Myth"],
 );
-
-void showFullScreenImage(BuildContext context, String imagePath, {Duration duration = const Duration(seconds: 1)}) {
-  final overlay = Overlay.of(context);
-
-  late OverlayEntry overlayEntry;
-
-  overlayEntry = OverlayEntry(
-    builder: (context) => FullScreenImageOverlay(
-      imagePath: imagePath,
-      duration: duration,
-      onFinish: () => overlayEntry.remove(),
-    ),
-  );
-
-  overlay.insert(overlayEntry);
-}
