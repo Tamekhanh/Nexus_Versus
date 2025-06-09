@@ -13,7 +13,7 @@ class LayoutController extends GetxController with GetSingleTickerProviderStateM
   @override
   void onInit() {
     super.onInit();
-    tabController = TabController(length: 4, vsync: this);
+    tabController = TabController(length: 5, vsync: this);
     tabController.addListener(() {
       if (!tabController.indexIsChanging) {
         currentIndex.value = tabController.index;
@@ -31,6 +31,17 @@ class LayoutController extends GetxController with GetSingleTickerProviderStateM
         // Controller chưa được khởi tạo thì bỏ qua
       }
     } else if (currentIndex.value != 2 && index == 2) {
+      // Nếu đang chuyển sang tab Debug => start nhạc
+      debugController.loopPlayer.start();
+    }
+    if (currentIndex.value == 4 && index != 4) {
+      try {
+        final debugController = Get.find<DebugBuildController>();
+        debugController.loopPlayer.stop();
+      } catch (e) {
+        // Controller chưa được khởi tạo thì bỏ qua
+      }
+    } else if (currentIndex.value != 4 && index == 4) {
       // Nếu đang chuyển sang tab Debug => start nhạc
       debugController.loopPlayer.start();
     }

@@ -21,6 +21,11 @@ class DeckView extends GetView<DeckController> {
             onPressed: () {
               controller.clearCurrentDeck();
             },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.red),
+              foregroundColor: MaterialStateProperty.all(Colors.white),
+              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 16, vertical: 8)),
+            ),
             child: Text("Clear All Card"),
           ),
         ),

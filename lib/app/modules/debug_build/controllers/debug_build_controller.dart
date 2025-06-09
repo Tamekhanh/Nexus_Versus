@@ -1,8 +1,11 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:nexus_versus/app/data/card_game/spell_card_data/still_see_you.dart';
+import 'package:nexus_versus/app/data/card_game/unit_card_data/black_crow.dart';
 import 'package:nexus_versus/app/data/debug/debug_data.dart';
 import 'package:nexus_versus/app/models/card_model.dart';
+import 'package:nexus_versus/app/models/in_battle_model.dart';
 import 'package:nexus_versus/app/models/spell_card_model.dart';
 import 'package:nexus_versus/app/models/unit_card_model.dart';
 
@@ -15,7 +18,11 @@ class DebugBuildController extends GetxController {
 
   RxList<CardModel?> cardList = <CardModel?>[].obs;
 
-  var onField = <CardModel?>[].obs;
+  var onFieldP2 = <CardModel?>[].obs;
+  var onFieldP1 = <CardModel?>[
+    BlackCrow, null, null, null, null, // Hàng 1-5: UnitCard
+    null, null, StillSeeYou, null, null, // Hàng 6-10: SpellCard
+  ].obs;
 
   final AudioPlayer _audioPlayer = AudioPlayer();
 
@@ -32,12 +39,12 @@ class DebugBuildController extends GetxController {
     cardList.value = debugData.entries
         .expand((entry) => List.generate(entry.value, (_) => entry.key))
         .toList();
-    onField.value = List.filled(10, null);
+    onFieldP2.value = List.filled(10, null);
   }
 
-  void placeCardOnField(int fieldIndex, BuildContext context) {
+  void placeCardonFieldP2(int fieldIndex, BuildContext context) {
     final selectedIndex = selectedCardIndex.value;
-    if (selectedIndex == -1 || onField[fieldIndex] != null) return;
+    if (selectedIndex == -1 || onFieldP2[fieldIndex] != null) return;
 
     final selected = cardList[selectedIndex];
     if (selected == null) return;
@@ -45,12 +52,17 @@ class DebugBuildController extends GetxController {
     // Kiểm tra đúng loại thẻ cho từng hàng
     if (fieldIndex <= 4 && selected is! UnitCardModel) return; // Hàng UnitCard
     if (fieldIndex >= 5 && selected is! SpellCardModel) return; // Hàng SpellCard
-
-    onField[fieldIndex] = selected;
-    cardList.removeAt(selectedIndex);
+    if (selected is UnitCardModel) {
+      final placedCard = selected.toInBattle(); // OK vì là UnitCardModel
+      onFieldP2[fieldIndex] = placedCard;
+      selected.onPlace?.call(context);
+    } else if (selected is SpellCardModel) {
+      onFieldP2[fieldIndex] = selected; // Không cần gọi toInBattle nếu SpellCardModel không kế thừa
+      selected.onPlace?.call(context);
+    }
     selectedCardIndex.value = -1;
 
-    onField.refresh();
+    onFieldP2.refresh();
     cardList.refresh();
 
     _playPlaceCardSound('sfx/Card_Apply.mp3');
@@ -107,7 +119,7 @@ class LoopPartsPlayer {
   Future<void> _playCurrentPart() async {
     await _audioPlayer.play(
         AssetSource(_parts[_currentPartIndex]),
-      volume: 0.5
+      volume: 0.3
     );
   }
 

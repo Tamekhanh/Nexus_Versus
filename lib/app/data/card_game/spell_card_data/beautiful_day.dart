@@ -8,7 +8,7 @@ final BeautifulDay = SpellCardModel(
   description: "As the first light of dawn touches the land, a gentle warmth fills your soul. "
       "This spell grants you the blessing of clarity and preparation—draw two additional cards from your deck and ready yourself for the trials ahead.",
   imageUrl: "image_card/spell_card/beautiful_day.png",
-  level: 12,
+  level: 10,
   onPlace: (context){},
   onAttack: (context) {},
   cardSpecial: Color(0xFFDFDFDF),

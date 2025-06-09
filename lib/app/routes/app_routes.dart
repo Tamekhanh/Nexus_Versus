@@ -8,6 +8,7 @@ abstract class Routes {
   static const LAYOUT = _Paths.LAYOUT;
   static const CARD_LIST = _Paths.CARD_LIST;
   static const DECK = _Paths.DECK;
+  static const BATTLE = _Paths.BATTLE;
 }
 
 abstract class _Paths {
@@ -17,4 +18,5 @@ abstract class _Paths {
   static const LAYOUT = '/layout';
   static const CARD_LIST = '/card-list';
   static const DECK = '/deck';
+  static const BATTLE = '/battle';
 }

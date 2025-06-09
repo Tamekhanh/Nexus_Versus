@@ -38,3 +38,24 @@ class InBattleModel extends UnitCardModel {
           cardSpecial: cardSpecial,
         );
 }
+
+extension UnitCardToInBattle on UnitCardModel {
+  InBattleModel toInBattle() {
+    return InBattleModel(
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      imageUrl: this.imageUrl,
+      level: this.level,
+      attackPower: this.attackPower,
+      healthPoints: this.healthPoints,
+      currentHealthPoints: this.healthPoints,
+      currentAttackPower: this.attackPower,
+      series: this.series,
+      onPlace: this.onPlace,
+      onAttack: this.onAttack,
+      onDead: this.onDead,
+      cardSpecial: this.cardSpecial,
+    );
+  }
+}

@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/battle/bindings/battle_binding.dart';
+import '../modules/battle/views/battle_view.dart';
 import '../modules/card_list/bindings/card_list_binding.dart';
 import '../modules/card_list/views/card_list_view.dart';
 import '../modules/debug_build/bindings/debug_build_binding.dart';
@@ -43,6 +45,11 @@ class AppPages {
       name: _Paths.DECK,
       page: () => const DeckView(),
       binding: DeckBinding(),
+    ),
+    GetPage(
+      name: _Paths.BATTLE,
+      page: () => const BattleView(),
+      binding: BattleBinding(),
     ),
   ];
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:nexus_versus/app/data/card_game/spell_card_data/crows_party.dart';
 import 'package:nexus_versus/app/data/card_game/spell_card_data/war_peace.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/black_crow.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/red_cowboy.dart';
 import 'package:nexus_versus/app/models/card_model.dart';
+import 'package:nexus_versus/app/models/in_battle_model.dart';
 import 'package:nexus_versus/app/models/spell_card_model.dart';
 import 'package:nexus_versus/app/models/unit_card_model.dart';
 import 'package:nexus_versus/app/modules/debug_build/controllers/debug_build_controller.dart';
@@ -35,8 +37,119 @@ class DebugBuildView extends GetView<DebugBuildController> {
             children: [
               Expanded(
                 flex: 5,
-                  child: Placeholder()
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.8,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            /// Hàng gồm 5 ô
+                            Obx(() => SizedBox(
+                              height: screenHeight * 0.37,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: List.generate(5, (index) {
+                                      final card = controller.onFieldP1[index + 5];
+                                      return Column(
+                                        children: [
+                                          // TextButton(
+                                          //   onPressed: () {
+                                          //     controller.onFieldP2[index + 5] = null;
+                                          //     controller.update();
+                                          //   },
+                                          //   child: Text("Delete ${index + 6}"),
+                                          // ),
+                                          GestureDetector(
+                                            // onTap: () {
+                                            //   if (controller.cardList[controller.selectedCardIndex.value] is SpellCardModel) {
+                                            //     controller.placeCardonFieldP2(index + 5, context);
+                                            //   }
+                                            // },
+                                            child: Container(
+                                              width: cardWidthOnbattle,
+                                              height: cardWidthOnbattle * (8 / 5),
+                                              margin: const EdgeInsets.symmetric(horizontal: 12),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.grey.shade600, width: 4),
+                                                borderRadius: BorderRadius.circular(8),
+                                                color: Colors.transparent,
+                                              ),
+                                              child: card is SpellCardModel
+                                                  ? SpellCardOnBattle(spellCardModel: card)
+                                                  : Center(child: Text("Ô ${index + 6}")),
+                                            ),
+                                          ),
+                                          // if (card is SpellCardModel)
+                                          //   Text("${card.name}", style: const TextStyle(fontSize: 12)),
+                                        ],
+                                      );
+                                    }),
+                                  ),
+                                  // Hàng trên: chỉ chứa UnitCardModel
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: List.generate(5, (index) {
+                                      final card = controller.onFieldP1[index];
+                                      return Column(
+                                        children: [
+                                          // TextButton(
+                                          //   onPressed: () {
+                                          //     controller.onFieldP2[index] = null;
+                                          //     controller.update();
+                                          //   },
+                                          //   child: Text("Delete ${index + 1}"),
+                                          // ),
+                                          GestureDetector(
+                                            // onTap: () {
+                                            //   if (controller.cardList[controller.selectedCardIndex.value] is UnitCardModel) {
+                                            //     controller.placeCardonFieldP2(index,context);
+                                            //   }
+                                            // },
+                                            child: Container(
+                                              width: cardWidthOnbattle,
+                                              height: cardWidthOnbattle * (8 / 5),
+                                              margin: const EdgeInsets.symmetric(horizontal: 12),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.grey.shade600,
+                                                    width: 4
+                                                ),
+                                                borderRadius: BorderRadius.circular(8),
+                                                color: Colors.transparent,
+                                              ),
+                                              child: card is UnitCardModel
+                                                  ? UnitCardOnBattle(unitCardModel: card)
+                                                  : Center(child: Text("Ô ${index + 1}")),
+                                            ),
+                                          ),
+                                          if (card is InBattleModel)
+                                            Column(
+                                              children: [
+                                                Text("HP: ${card.currentHealthPoints}", style: const TextStyle(fontSize: 12)),
+                                                Text("ATK: ${card.currentAttackPower}", style: const TextStyle(fontSize: 12)),
+                                              ],
+                                            ),
+                                        ],
+                                      );
+                                    }),
+                                  ),
+                                ],
+                              ),
+                            ))
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
               ),
+              Divider(),
               Expanded(
                 flex: 8,
                 child: Padding(
@@ -48,22 +161,6 @@ class DebugBuildView extends GetView<DebugBuildController> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // /// Lá bài được chọn
-                          // Obx(() => SizedBox(
-                          //   height: screenHeight * 0.6,
-                          //   child: cardList[controller.selectedCardIndex.value] is UnitCardModel
-                          //       ? UnitCard(
-                          //     isSmall: false,
-                          //     unitCardModel: cardList[controller.selectedCardIndex.value] as UnitCardModel,
-                          //   )
-                          //       : SpellCard(
-                          //     isSmall: false,
-                          //     spellCardModel: cardList[controller.selectedCardIndex.value] as SpellCardModel,
-                          //   ),
-                          // )),
-                          //
-                          // const SizedBox(height: 16),
-
                           /// Hàng gồm 5 ô
                           Obx(() => SizedBox(
                             height: screenHeight * 0.37,
@@ -75,12 +172,12 @@ class DebugBuildView extends GetView<DebugBuildController> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(5, (index) {
-                                    final card = controller.onField[index];
+                                    final card = controller.onFieldP2[index];
                                     return Column(
                                       children: [
                                         // TextButton(
                                         //   onPressed: () {
-                                        //     controller.onField[index] = null;
+                                        //     controller.onFieldP2[index] = null;
                                         //     controller.update();
                                         //   },
                                         //   child: Text("Delete ${index + 1}"),
@@ -88,7 +185,7 @@ class DebugBuildView extends GetView<DebugBuildController> {
                                         GestureDetector(
                                           onTap: () {
                                             if (controller.cardList[controller.selectedCardIndex.value] is UnitCardModel) {
-                                              controller.placeCardOnField(index,context);
+                                              controller.placeCardonFieldP2(index,context);
                                             }
                                           },
                                           child: Container(
@@ -108,11 +205,11 @@ class DebugBuildView extends GetView<DebugBuildController> {
                                                 : Center(child: Text("Ô ${index + 1}")),
                                           ),
                                         ),
-                                        if (card is UnitCardModel)
+                                        if (card is InBattleModel)
                                           Column(
                                             children: [
-                                              Text("HP: ${card.healthPoints}", style: const TextStyle(fontSize: 12)),
-                                              Text("ATK: ${card.attackPower}", style: const TextStyle(fontSize: 12)),
+                                              Text("HP: ${card.currentHealthPoints}", style: const TextStyle(fontSize: 12)),
+                                              Text("ATK: ${card.currentAttackPower}", style: const TextStyle(fontSize: 12)),
                                             ],
                                           ),
                                       ],
@@ -124,12 +221,12 @@ class DebugBuildView extends GetView<DebugBuildController> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(5, (index) {
-                                    final card = controller.onField[index + 5];
+                                    final card = controller.onFieldP2[index + 5];
                                     return Column(
                                       children: [
                                         // TextButton(
                                         //   onPressed: () {
-                                        //     controller.onField[index + 5] = null;
+                                        //     controller.onFieldP2[index + 5] = null;
                                         //     controller.update();
                                         //   },
                                         //   child: Text("Delete ${index + 6}"),
@@ -137,7 +234,7 @@ class DebugBuildView extends GetView<DebugBuildController> {
                                         GestureDetector(
                                           onTap: () {
                                             if (controller.cardList[controller.selectedCardIndex.value] is SpellCardModel) {
-                                              controller.placeCardOnField(index + 5, context);
+                                              controller.placeCardonFieldP2(index + 5, context);
                                             }
                                           },
                                           child: Container(
@@ -219,7 +316,20 @@ class DebugBuildView extends GetView<DebugBuildController> {
                 )
               ),
             );
-          })
+          }),
+
+          Positioned(
+              bottom: 0,
+              right: 0,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SizedBox(
+                  width: cardWidthOnbattle + 64,
+                  height: cardWidthOnbattle * (8 / 5) + 64,
+                  child: Placeholder(),
+                ),
+              )
+          )
         ],
       ),
     );

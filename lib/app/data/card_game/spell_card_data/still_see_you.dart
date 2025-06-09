@@ -7,24 +7,43 @@ final StillSeeYou = SpellCardModel(
   name: "They Still See You",
   description: "In the shadows of the past, they still watch. This spell allows you to summon a unit from your graveyard, bringing back a fallen ally to fight once more.",
   imageUrl: "image_card/spell_card/they_can_see_you.png",
-  level: 10,
-  onPlace: (context) {
-    // showFullScreenImage(context,"summon_effect/bigbird.png");
-    showFullScreenImage(
-        context,"image_card/spell_card/they_can_see_you.png",
-        text: Text(
-          "They Still See You",
-          style: TextStyle(
-            fontSize: MediaQuery.sizeOf(context).width * 0.075,
-            fontWeight: FontWeight.bold,
-            color: Colors.red,
-          ),
-        ),
-    );
-  },
+  level: 13,
+  onPlace: (context) => onPlace(context),
   onAttack: (context) {
 
   },
   cardSpecial: Color(0xFF001157),
   series: ["Myth"],
 );
+
+void onPlace(BuildContext context) {
+  // This function can be used to handle any additional logic when the card is placed
+  // For example, you might want to trigger an animation or update the game state
+
+  debugPrint("Spell card 'They Still See You' has been placed.");
+  showFullScreenImage(
+    context,"image_card/spell_card/they_can_see_you.png",
+    text: Text(
+        "They Still See You",
+        style: TextStyle(
+          fontSize: MediaQuery.sizeOf(context).width * 0.075,
+          fontWeight: FontWeight.w900,
+          fontFamily: 'Cinzel', // Gothic style, nên import vào pubspec.yaml
+          letterSpacing: 2.0,
+          color: Colors.redAccent.shade100,
+          shadows: [
+            Shadow(
+              blurRadius: 4,
+              color: Colors.black87,
+              offset: Offset(2, 2),
+            ),
+            Shadow(
+              blurRadius: 10,
+              color: Colors.redAccent.withOpacity(0.7),
+              offset: Offset(0, 0),
+            ),
+          ],
+        )
+    ),
+  );
+}

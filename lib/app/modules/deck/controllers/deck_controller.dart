@@ -69,21 +69,6 @@ class DeckController extends GetxController {
     currentDeckIndex.value = index;
   }
 
-  void addCardToCurrentDeck(CardModel card) {
-    switch (currentDeckIndex.value) {
-      case 0:
-        deck1.add(card);
-        break;
-      case 1:
-        deck2.add(card);
-        break;
-      case 2:
-        deck3.add(card);
-        break;
-    }
-    saveDecks();
-  }
-
   Future<void> saveDecks() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -107,4 +92,38 @@ class DeckController extends GetxController {
     }
     saveDecks();
   }
+  void addCardToCurrentDeck(CardModel card) {
+    final currentDeck = _getCurrentDeck();
+
+    if (currentDeck.length >= 32) {
+      Get.snackbar(
+        "Deck Full",
+        "Each deck can contain a maximum of 32 cards.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    currentDeck.add(card);
+    saveDecks();
+  }
+
+
+  RxList<CardModel> _getCurrentDeck() {
+    switch (currentDeckIndex.value) {
+      case 0:
+        return deck1;
+      case 1:
+        return deck2;
+      case 2:
+        return deck3;
+      default:
+        return deck1;
+    }
+  }
+
+
+
 }

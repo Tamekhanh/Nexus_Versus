@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:nexus_versus/app/modules/battle/views/battle_view.dart';
 import 'package:nexus_versus/app/modules/card_list/views/card_list_view.dart';
 import 'package:nexus_versus/app/modules/debug_build/views/debug_build_view.dart';
 import 'package:nexus_versus/app/modules/deck/views/deck_view.dart';
@@ -53,6 +54,12 @@ class LayoutView extends GetView<LayoutController> {
                     isSelected: controller.currentIndex.value == 3,
                     onTap: () => controller.onTabChange(3),
                   ),
+                  _NavItem(
+                    icon: Icon(Icons.bug_report_rounded),
+                    label: 'Battle',
+                    isSelected: controller.currentIndex.value == 4,
+                    onTap: () => controller.onTabChange(4),
+                  ),
                 ],
               ),
               )
@@ -66,7 +73,8 @@ class LayoutView extends GetView<LayoutController> {
                 HomeView(),
                 CardListView(),
                 DebugBuildView(),
-                DeckView()
+                DeckView(),
+                BattleView()
               ],
             ),
           ),

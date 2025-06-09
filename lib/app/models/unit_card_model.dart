@@ -1,52 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:nexus_versus/app/models/card_model.dart';
+import 'card_model.dart';
 
-class UnitCardModel extends CardModel{
+class UnitCardModel extends CardModel {
   final int attackPower;
   final int healthPoints;
   final Color cardSpecial;
-  void Function(BuildContext context)? onPlace;
-  void Function(BuildContext context)? onAttack;
-  void Function(BuildContext context)? onDead;
 
   UnitCardModel({
-    required String id,
-    required String name,
-    required String description,
-    required String imageUrl,
-    required int level,
+    required super.id,
+    required super.name,
+    required super.description,
+    required super.imageUrl,
+    required super.level,
     required this.attackPower,
     required this.healthPoints,
-    List<String>? series,
-    this.onPlace,
-    this.onAttack,
-    this.onDead,
-    this.cardSpecial = Colors.blueGrey
-  }): super(
-    id: id,
-    name: name,
-    description: description,
-    imageUrl: imageUrl,
-    level: level,
-    series: series,
-  );
+    super.series,
+    this.cardSpecial = Colors.blueGrey,
+    super.onPlace,
+    super.onAttack,
+    super.onDead,
+  });
 
   factory UnitCardModel.fromJson(
-      Map<String, dynamic> json,
-      void Function(BuildContext context)? onPlace,
-      void Function(BuildContext context)? onAttack,
-      Color cardSpecial,
-      void Function(BuildContext context)? onDead,
-      ) {
+      Map<String, dynamic> json, {
+        void Function(BuildContext context)? onPlace,
+        void Function(BuildContext context)? onAttack,
+        void Function(BuildContext context)? onDead,
+        Color cardSpecial = Colors.blueGrey,
+      }) {
     return UnitCardModel(
       id: json['id'],
       name: json['name'],
-      attackPower: json['attackPower'],
-      healthPoints: json['healthPoints'],
       description: json['description'],
-      series: json['series'] != null ? List<String>.from(json['series']) : null,
       imageUrl: json['imageUrl'],
       level: json['level'],
+      series: List<String>.from(json['series'] ?? []),
+      attackPower: json['attackPower'],
+      healthPoints: json['healthPoints'],
       cardSpecial: cardSpecial,
       onPlace: onPlace,
       onAttack: onAttack,
@@ -57,7 +47,26 @@ class UnitCardModel extends CardModel{
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
+    json['attackPower'] = attackPower;
+    json['healthPoints'] = healthPoints;
     json['type'] = 'unit';
     return json;
+  }
+
+  UnitCardModel toInBattle() {
+    return UnitCardModel(
+      id: id,
+      name: name,
+      description: description,
+      imageUrl: imageUrl,
+      level: level,
+      attackPower: attackPower,
+      healthPoints: healthPoints,
+      series: series,
+      cardSpecial: cardSpecial,
+      onPlace: onPlace,
+      onAttack: onAttack,
+      onDead: onDead,
+    );
   }
 }

@@ -8,6 +8,11 @@ class CardModel {
   final int level;
   final List<String>? series;
 
+  // Thêm các callback vào CardModel
+  final void Function(BuildContext context)? onPlace;
+  final void Function(BuildContext context)? onAttack;
+  final void Function(BuildContext context)? onDead;
+
   CardModel({
     required this.id,
     required this.name,
@@ -15,9 +20,17 @@ class CardModel {
     required this.imageUrl,
     required this.level,
     this.series,
+    this.onPlace,
+    this.onAttack,
+    this.onDead,
   });
 
-  factory CardModel.fromJson(Map<String, dynamic> json,) {
+  factory CardModel.fromJson(
+      Map<String, dynamic> json, {
+        void Function(BuildContext context)? onPlace,
+        void Function(BuildContext context)? onAttack,
+        void Function(BuildContext context)? onDead,
+      }) {
     return CardModel(
       id: json['id'],
       name: json['name'],
@@ -25,6 +38,9 @@ class CardModel {
       imageUrl: json['imageUrl'],
       level: json['level'],
       series: json['series'] != null ? List<String>.from(json['series']) : null,
+      onPlace: onPlace,
+      onAttack: onAttack,
+      onDead: onDead,
     );
   }
 
@@ -36,6 +52,7 @@ class CardModel {
       'imageUrl': imageUrl,
       'level': level,
       'series': series,
+      // Callback thường không serialize nên không đưa vào JSON
     };
   }
 }
