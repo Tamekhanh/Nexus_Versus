@@ -4,8 +4,8 @@ import 'package:nexus_versus/app/models/unit_card_model.dart';
 import 'package:flutter/material.dart';
 
 class InBattleModel extends UnitCardModel {
-  final int currentHealthPoints;
-  final int currentAttackPower;
+  int currentHealthPoints;  // Bỏ final để thay đổi được
+  int currentAttackPower;
   final int attemt = 1;
 
   InBattleModel({
@@ -16,28 +16,31 @@ class InBattleModel extends UnitCardModel {
     required int level,
     required int attackPower,
     required int healthPoints,
-    this.currentHealthPoints = 0,
-    this.currentAttackPower = 0,
+    int? currentHealthPoints,
+    int? currentAttackPower,
     List<String>? series,
     void Function(BuildContext context)? onPlace,
     void Function(BuildContext context)? onAttack,
     void Function(BuildContext context)? onDead,
     Color cardSpecial = Colors.blueGrey,
-  }) : super(
-          id: id,
-          name: name,
-          description: description,
-          imageUrl: imageUrl,
-          level: level,
-          attackPower: attackPower,
-          healthPoints: healthPoints,
-          series: series,
-          onPlace: onPlace,
-          onAttack: onAttack,
-          onDead: onDead,
-          cardSpecial: cardSpecial,
-        );
+  })  : currentHealthPoints = currentHealthPoints ?? healthPoints,
+        currentAttackPower = currentAttackPower ?? attackPower,
+        super(
+        id: id,
+        name: name,
+        description: description,
+        imageUrl: imageUrl,
+        level: level,
+        attackPower: attackPower,
+        healthPoints: healthPoints,
+        series: series,
+        onPlace: onPlace,
+        onAttack: onAttack,
+        onDead: onDead,
+        cardSpecial: cardSpecial,
+      );
 }
+
 
 extension UnitCardToInBattle on UnitCardModel {
   InBattleModel toInBattle() {
@@ -49,7 +52,7 @@ extension UnitCardToInBattle on UnitCardModel {
       level: this.level,
       attackPower: this.attackPower,
       healthPoints: this.healthPoints,
-      currentHealthPoints: this.healthPoints,
+      currentHealthPoints: this.healthPoints, // ban đầu = full hp
       currentAttackPower: this.attackPower,
       series: this.series,
       onPlace: this.onPlace,

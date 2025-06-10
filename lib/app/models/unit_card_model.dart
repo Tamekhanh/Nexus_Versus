@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'card_model.dart';
 
 class UnitCardModel extends CardModel {
-  final int attackPower;
-  final int healthPoints;
+  int attackPower;
+  int healthPoints;
   final Color cardSpecial;
 
   UnitCardModel({

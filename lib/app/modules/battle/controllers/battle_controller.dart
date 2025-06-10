@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:nexus_versus/app/data/debug/debug_data.dart';
@@ -6,6 +8,7 @@ import 'package:nexus_versus/app/models/card_model.dart';
 import 'package:nexus_versus/app/models/spell_card_model.dart';
 import 'package:nexus_versus/app/models/unit_card_model.dart';
 import 'package:nexus_versus/app/modules/battle/controllers/loop_part_player.dart';
+import 'package:nexus_versus/app/widgets/card_information.dart';
 
 
 enum Player { player1, player2 }
@@ -27,6 +30,8 @@ class BattleController extends GetxController {
 
   RxList<CardModel?> onFieldP1 = List<CardModel?>.filled(10, null).obs;
   RxList<CardModel?> onFieldP2 = List<CardModel?>.filled(10, null).obs;
+
+  var selectedAttackerIndex = (-1).obs;
 
   final AudioPlayer _audioPlayerCardSelect = AudioPlayer();
   final AudioPlayer _audioPlayerCardPlace = AudioPlayer();
@@ -129,14 +134,15 @@ class BattleController extends GetxController {
     if (fieldIndex <= 4 && selected is! UnitCardModel) return;
     if (fieldIndex >= 5 && selected is! SpellCardModel) return;
 
+
     if (selected is UnitCardModel) {
       final placedCard = selected.toInBattle();
       field[fieldIndex] = placedCard;
+      placedCard.onPlace?.call(context);
     } else if (selected is SpellCardModel) {
       field[fieldIndex] = selected;
+      selected.onPlace?.call(context);
     }
-
-    selected.onPlace?.call(context);
 
     _playPlaceSound();
 
@@ -255,4 +261,69 @@ class BattleController extends GetxController {
       }
     }
   }
+
+  void selectAttacker(int index) {
+    if (index < 0 || index >= onFieldP2.length) return;
+    final card = onFieldP2[index];
+    if (card is UnitCardModel) {
+      selectedAttackerIndex.value = index;
+      print('Player 2 selected attacker at index $index');
+    }
+  }
+
+  void onDead(int index, {required Player player}) {
+    final field = getField(player);
+    final card = field.elementAtOrNull(index);
+    if (card == null) return;
+    if (card is UnitCardModel) {
+      card.onDead?.call(battleContext);
+      if (kDebugMode) {
+        print('Card ${card.name} is dead at index $index');
+      }
+    }
+  }
+
+  void cardInformation(CardModel card) {
+    showDialog(
+      context: battleContext,
+      builder: (context) => CardInformationDialog(card: card),
+    );
+  }
+
+  // void attackTarget(int targetIndex) {
+  //   final attackerIndex = selectedAttackerIndex.value;
+  //   if (attackerIndex == -1) return;
+  //
+  //   final attacker = onFieldP2[attackerIndex];
+  //   final target = onFieldP1.elementAtOrNull(targetIndex);
+  //
+  //   if (attacker is! UnitCardModel) return;
+  //
+  //   if (target == null) {
+  //     // Tấn công trực tiếp nếu không có mục tiêu (ví dụ như Nexus)
+  //     print('Player 2 attacks Nexus directly with ${attacker.name} for ${attacker.attack} damage');
+  //     // TODO: Giảm máu Nexus
+  //   } else if (target is UnitCardModel) {
+  //     // Tấn công lẫn nhau
+  //     target -= attacker.attack;
+  //     attacker.hp -= target.attack;
+  //     print('Combat: ${attacker.name} (${attacker.hp}) vs ${target.name} (${target.hp})');
+  //
+  //     // Kiểm tra nếu thẻ chết
+  //     if (target.hp <= 0) {
+  //       onFieldP1[targetIndex] = null;
+  //       print('${target.name} was destroyed!');
+  //     }
+  //     if (attacker.hp <= 0) {
+  //       onFieldP2[attackerIndex] = null;
+  //       print('${attacker.name} was destroyed!');
+  //     }
+  //
+  //     onFieldP1.refresh();
+  //     onFieldP2.refresh();
+  //   }
+  //
+  //   selectedAttackerIndex.value = -1;
+  // }
+
 }

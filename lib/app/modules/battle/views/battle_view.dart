@@ -23,6 +23,10 @@ class BattleView extends GetView<BattleController> {
     const double cardWidthOnbattle = 100;
     final handCards = controller.handCardsP2;
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Get.find<BattleController>().setBattleContext(context);
+    });
+
     return Scaffold(
       body: Stack(
         children: [
@@ -45,7 +49,8 @@ class BattleView extends GetView<BattleController> {
                           Obx(() => SizedBox(
                             height: screenHeight * 0.37,
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              spacing: 8,
                               children: [
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -124,11 +129,11 @@ class BattleView extends GetView<BattleController> {
                                                 : Center(child: Text("Ô ${index + 1}")),
                                           ),
                                         ),
-                                        if (card is InBattleModel)
+                                        if (card is UnitCardModel)
                                           Column(
                                             children: [
-                                              Text("HP: ${card.currentHealthPoints}", style: const TextStyle(fontSize: 12)),
-                                              Text("ATK: ${card.currentAttackPower}", style: const TextStyle(fontSize: 12)),
+                                              Text("HP: ${card.healthPoints}", style: const TextStyle(fontSize: 12)),
+                                              Text("ATK: ${card.attackPower}", style: const TextStyle(fontSize: 12)),
                                             ],
                                           ),
                                       ],
@@ -183,6 +188,9 @@ class BattleView extends GetView<BattleController> {
                                               controller.placeCardOnField(player: Player.player2, fieldIndex: index, context: context);
                                             }
                                           },
+                                          onDoubleTap: () {
+                                            controller.cardInformation(card as UnitCardModel);
+                                          },
                                           child: Container(
                                             width: cardWidthOnbattle,
                                             height: cardWidthOnbattle * (8 / 5),
@@ -200,11 +208,11 @@ class BattleView extends GetView<BattleController> {
                                                 : Center(child: Text("Ô ${index + 1}")),
                                           ),
                                         ),
-                                        if (card is InBattleModel)
+                                        if (card is UnitCardModel)
                                           Column(
                                             children: [
-                                              Text("HP: ${card.currentHealthPoints}", style: const TextStyle(fontSize: 12)),
-                                              Text("ATK: ${card.currentAttackPower}", style: const TextStyle(fontSize: 12)),
+                                              Text("HP: ${card.healthPoints}", style: const TextStyle(fontSize: 12)),
+                                              Text("ATK: ${card.attackPower}", style: const TextStyle(fontSize: 12)),
                                             ],
                                           ),
                                       ],
@@ -294,6 +302,9 @@ class BattleView extends GetView<BattleController> {
                             child: GestureDetector(
                               onTap: () {
                                 controller.selectCard(index);
+                              },
+                              onDoubleTap: () {
+                                controller.cardInformation(card is UnitCardModel ? card : card as SpellCardModel);
                               },
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
