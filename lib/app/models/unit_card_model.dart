@@ -6,6 +6,9 @@ class UnitCardModel extends CardModel {
   int healthPoints;
   final Color cardSpecial;
 
+  int currentHealthPoints;
+  int currentAttackPower;
+
   UnitCardModel({
     required super.id,
     required super.name,
@@ -19,7 +22,8 @@ class UnitCardModel extends CardModel {
     super.onPlace,
     super.onAttack,
     super.onDead,
-  });
+  }): currentHealthPoints = healthPoints,
+        currentAttackPower = attackPower;
 
   factory UnitCardModel.fromJson(
       Map<String, dynamic> json, {

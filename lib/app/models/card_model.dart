@@ -13,6 +13,8 @@ class CardModel {
   final void Function(BuildContext context)? onAttack;
   final void Function(BuildContext context)? onDead;
 
+  final List<String>? effects;
+
   CardModel({
     required this.id,
     required this.name,
@@ -23,6 +25,7 @@ class CardModel {
     this.onPlace,
     this.onAttack,
     this.onDead,
+    this.effects,
   });
 
   factory CardModel.fromJson(
@@ -41,6 +44,7 @@ class CardModel {
       onPlace: onPlace,
       onAttack: onAttack,
       onDead: onDead,
+      effects: json['effects'] != null ? List<String>.from(json['effects']) : null,
     );
   }
 

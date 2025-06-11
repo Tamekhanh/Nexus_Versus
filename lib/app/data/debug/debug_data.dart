@@ -19,3 +19,4 @@ Map<CardModel,int> debugData = {
   BeautifulDay : 1,
   HeavenlyThunder : 1,
 };
+

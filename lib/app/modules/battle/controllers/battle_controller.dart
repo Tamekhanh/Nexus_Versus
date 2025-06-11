@@ -24,12 +24,15 @@ class BattleController extends GetxController {
   final loopPlayer = LoopPartsPlayer();
 
   RxList<CardModel?> handCardsP2 = <CardModel?>[].obs;
-  RxList<CardModel> deckCardsP2 = <CardModel>[].obs;
+  RxList<CardModel?> deckCardsP2 = <CardModel?>[].obs;
   RxList<CardModel?> handCardsP1 = <CardModel?>[].obs;
-  RxList<CardModel> deckCardsP1 = <CardModel>[].obs;
+  RxList<CardModel?> deckCardsP1 = <CardModel?>[].obs;
 
   RxList<CardModel?> onFieldP1 = List<CardModel?>.filled(10, null).obs;
   RxList<CardModel?> onFieldP2 = List<CardModel?>.filled(10, null).obs;
+
+  RxList<CardModel?> graveCardsP1 = <CardModel?>[].obs;
+  RxList<CardModel?> graveCardsP2 = <CardModel?>[].obs;
 
   var selectedAttackerIndex = (-1).obs;
 
@@ -88,7 +91,7 @@ class BattleController extends GetxController {
   RxList<CardModel?> getField(Player player) =>
       player == Player.player1 ? onFieldP1 : onFieldP2;
 
-  RxList<CardModel> getDeck(Player player) =>
+  RxList<CardModel?> getDeck(Player player) =>
       player == Player.player1 ? deckCardsP1 : deckCardsP2;
 
   RxList<CardModel?> getHand(Player player) =>
@@ -137,6 +140,7 @@ class BattleController extends GetxController {
 
     if (selected is UnitCardModel) {
       final placedCard = selected.toInBattle();
+      placedCard.currentHealthPoints = placedCard.healthPoints;
       field[fieldIndex] = placedCard;
       placedCard.onPlace?.call(context);
     } else if (selected is SpellCardModel) {
@@ -187,10 +191,15 @@ class BattleController extends GetxController {
     print('[$player] Drew card: $drawnCard');
   }
 
-  void drawMultipleCards(int count, {Player player = Player.player2}) {
+  void drawMultipleCards(int count, {required Player player}) {
+    final deck = getDeck(player);
+    final hand = getHand(player);
+
     for (int i = 0; i < count; i++) {
-      if (getDeck(player).isEmpty) {
-        print('Deck empty, stopped drawing at $i cards for $player');
+      if (deck.isEmpty) {
+        if (kDebugMode) {
+          print('Deck empty, stopped drawing at $i cards for $player');
+        }
         break;
       }
       drawCard(player: player);
@@ -202,7 +211,9 @@ class BattleController extends GetxController {
     if (_isAITurnRunning) return;
     _isAITurnRunning = true;
     drawCard(player: Player.player1);
-    print('AI thinking...');
+    if (kDebugMode) {
+      print('AI thinking...');
+    }
 
     for (int i = 0; i < handCardsP1.length; i++) {
       final card = handCardsP1[i];
@@ -225,20 +236,26 @@ class BattleController extends GetxController {
 
           card.onPlace?.call(context);
         } else {
-          print('Warning: No overlay context available to place card');
+          if (kDebugMode) {
+            print('Warning: No overlay context available to place card');
+          }
         }
 
         drawCard(player: Player.player1);
 
         currentTurn.value = Player.player2;
-        print('AI placed card at $emptyIndex and ended turn.');
+        if (kDebugMode) {
+          print('AI placed card at $emptyIndex and ended turn.');
+        }
         _isAITurnRunning = false;
         return;
       }
     }
 
     currentTurn.value = Player.player2;
-    print('AI cannot play any card, turn ended.');
+    if (kDebugMode) {
+      print('AI cannot play any card, turn ended.');
+    }
     _isAITurnRunning = false;
   }
 
@@ -275,10 +292,18 @@ class BattleController extends GetxController {
     final field = getField(player);
     final card = field.elementAtOrNull(index);
     if (card == null) return;
+    player == Player.player1
+        ? graveCardsP1.add(card)
+        : graveCardsP2.add(card);
     if (card is UnitCardModel) {
       card.onDead?.call(battleContext);
       if (kDebugMode) {
         print('Card ${card.name} is dead at index $index');
+      }
+    } else if (card is SpellCardModel) {
+      card.onDead?.call(battleContext);
+      if (kDebugMode) {
+        print('Spell ${card.name} is deactivate at index $index');
       }
     }
   }

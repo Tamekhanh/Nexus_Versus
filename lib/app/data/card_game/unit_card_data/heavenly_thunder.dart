@@ -28,13 +28,13 @@ final HeavenlyThunder = UnitCardModel(
       }
       if (card is UnitCardModel) {
         if (kDebugMode) {
-          print('Before damage: ${card.name} hp=${card.healthPoints}');
+          print('Before damage: ${card.name} hp=${card.currentHealthPoints}');
         }
-        card.healthPoints -= 1000;
+        card.currentHealthPoints -= 1000;
         if (kDebugMode) {
-          print('After damage: ${card.name} hp=${card.healthPoints}');
+          print('After damage: ${card.name} hp=${card.currentHealthPoints}');
         }
-        if (card.healthPoints <= 0) {
+        if (card.currentHealthPoints <= 0) {
           controller.onDead(i, player: isPlayer1 ? Player.player2 : Player.player1);
           enemyField[i] = null;
           if (kDebugMode) {

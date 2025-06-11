@@ -132,8 +132,8 @@ class BattleView extends GetView<BattleController> {
                                         if (card is UnitCardModel)
                                           Column(
                                             children: [
-                                              Text("HP: ${card.healthPoints}", style: const TextStyle(fontSize: 12)),
-                                              Text("ATK: ${card.attackPower}", style: const TextStyle(fontSize: 12)),
+                                              Text("HP: ${card.currentHealthPoints}", style: const TextStyle(fontSize: 12)),
+                                              Text("ATK: ${card.currentAttackPower}", style: const TextStyle(fontSize: 12)),
                                             ],
                                           ),
                                       ],
@@ -211,8 +211,8 @@ class BattleView extends GetView<BattleController> {
                                         if (card is UnitCardModel)
                                           Column(
                                             children: [
-                                              Text("HP: ${card.healthPoints}", style: const TextStyle(fontSize: 12)),
-                                              Text("ATK: ${card.attackPower}", style: const TextStyle(fontSize: 12)),
+                                              Text("HP: ${card.currentHealthPoints}", style: const TextStyle(fontSize: 12)),
+                                              Text("ATK: ${card.currentAttackPower}", style: const TextStyle(fontSize: 12)),
                                             ],
                                           ),
                                       ],
@@ -239,6 +239,9 @@ class BattleView extends GetView<BattleController> {
                                             if (controller.handCardsP2[controller.selectedCardIndex.value] is SpellCardModel) {
                                               controller.placeCardOnField(player: Player.player2, fieldIndex: index + 5, context: context);
                                             }
+                                          },
+                                          onDoubleTap: () {
+                                            controller.cardInformation(card as SpellCardModel);
                                           },
                                           child: Container(
                                             width: cardWidthOnbattle,
@@ -324,21 +327,67 @@ class BattleView extends GetView<BattleController> {
             );
           }),
 
-          Positioned(
-              bottom: 16,
-              right: 16,
-            child: SizedBox(
-              width: cardWidthOnbattle + 64,
-              height: cardWidthOnbattle * (8 / 5) + 64,
-              child: GestureDetector(
-                  onTap: () {
-                    print('Tapped draw card button');
-                    controller.drawCard(player: Player.player2);
-                  },
-                  child: Container(color: Colors.red),
-              ),
+          Obx(() => Positioned(
+            bottom: 16,
+            right: 16,
+            child: Column(
+              spacing: 16,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: controller.graveCardsP2.isEmpty
+                        ? null
+                        : Border.all(
+                        color: Colors.black,
+                        width: 2,
+                        style: BorderStyle.solid
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                        width: cardWidthOnbattle + 64,
+                        height: cardWidthOnbattle * (8 / 5) + 64,
+                        child: Center(
+                            child: controller.graveCardsP2.isEmpty
+                                ? Container(
+                                width: cardWidthOnbattle + 64,
+                                height: cardWidthOnbattle * (8 / 5) + 64,
+                                child: Placeholder()
+                            )
+                                : Container(
+                              width: cardWidthOnbattle + 64,
+                              height: cardWidthOnbattle * (8 / 5) + 64,
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: Colors.black, width: 2),
+                              ),
+                              child: Center(
+                                child: Obx(() => Text(
+                                  'Grave: ${controller.graveCardsP2.length}',
+                                  style: const TextStyle(fontSize: 24, color: Colors.white),
+                                )),
+                              ),
+                            )
+                        )
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: cardWidthOnbattle + 64,
+                  height: cardWidthOnbattle * (8 / 5) + 64,
+                  child: GestureDetector(
+                    onTap: () {
+                      print('Tapped draw card button');
+                      controller.drawCard(player: Player.player2);
+                    },
+                    child: Container(color: Colors.red),
+                  ),
+                ),
+              ],
             ),
-          ),
+          ),),
 
           Positioned(
             bottom: 16,

@@ -21,7 +21,7 @@ final GodHand = UnitCardModel(
 
     for (int i = 0; i < enemyField.length; i++) {
       final card = enemyField[i];
-      if (card is UnitCardModel && card.attackPower <= 1000) {
+      if (card is UnitCardModel && card.currentAttackPower <= 1000) {
         controller.onDead(i, player: isPlayer1 ? Player.player2 : Player.player1);
         enemyField[i] = null;
         if (kDebugMode) {
