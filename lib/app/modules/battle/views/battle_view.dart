@@ -81,7 +81,10 @@ class BattleView extends GetView<BattleController> {
                                               color: Colors.transparent,
                                             ),
                                             child: card is SpellCardModel
-                                                ? SpellCardOnBattle(spellCardModel: card)
+                                                ? SpellCardOnBattle(
+                                                spellCardModel: card,
+                                              animateOnAppear: true,
+                                            )
                                                 : Center(child: Text("Ô ${index + 6}")),
                                           ),
                                         ),
@@ -125,7 +128,10 @@ class BattleView extends GetView<BattleController> {
                                               color: Colors.transparent,
                                             ),
                                             child: card is UnitCardModel
-                                                ? UnitCardOnBattle(unitCardModel: card)
+                                                ? UnitCardOnBattle(
+                                                unitCardModel: card,
+                                              animateOnAppear: true,
+                                            )
                                                 : Center(child: Text("Ô ${index + 1}")),
                                           ),
                                         ),
@@ -135,13 +141,13 @@ class BattleView extends GetView<BattleController> {
                                               Text("HP: ${card.currentHealthPoints}",
                                                   style: TextStyle(
                                                       fontSize: 12,
-                                                      color: card.currentHealthPoints < card.healthPoints ? Colors.red : card.currentHealthPoints < card.healthPoints ? Colors.green : Colors.grey
+                                                      color: card.currentHealthPoints < card.healthPoints ? Colors.red : card.currentHealthPoints > card.healthPoints ? Colors.green : Colors.grey
                                                   )
                                               ),
                                               Text("ATK: ${card.currentAttackPower}",
                                                   style: TextStyle(
                                                       fontSize: 12,
-                                                      color: card.currentAttackPower < card.attackPower ? Colors.red : card.currentAttackPower < card.attackPower ? Colors.green : Colors.grey
+                                                      color: card.currentAttackPower < card.attackPower ? Colors.red : card.currentAttackPower > card.attackPower ? Colors.green : Colors.grey
                                                   )
                                               ),
                                             ],
@@ -214,7 +220,10 @@ class BattleView extends GetView<BattleController> {
                                               color: Colors.transparent,
                                             ),
                                             child: card is UnitCardModel
-                                                ? UnitCardOnBattle(unitCardModel: card)
+                                                ? UnitCardOnBattle(
+                                                unitCardModel: card,
+                                              animateOnAppear: true,
+                                            )
                                                 : Center(child: Text("Ô ${index + 1}")),
                                           ),
                                         ),
@@ -224,13 +233,13 @@ class BattleView extends GetView<BattleController> {
                                               Text("HP: ${card.currentHealthPoints}",
                                                   style: TextStyle(
                                                     fontSize: 12,
-                                                      color: card.currentHealthPoints < card.healthPoints ? Colors.red : card.currentHealthPoints < card.healthPoints ? Colors.green : Colors.grey
+                                                    color: card.currentHealthPoints < card.healthPoints ? Colors.red : card.currentHealthPoints > card.healthPoints ? Colors.green : Colors.grey
                                                   )
                                               ),
                                               Text("ATK: ${card.currentAttackPower}",
                                                   style: TextStyle(
                                                       fontSize: 12,
-                                                    color: card.currentAttackPower < card.attackPower ? Colors.red : card.currentAttackPower < card.attackPower ? Colors.green : Colors.grey
+                                                      color: card.currentAttackPower < card.attackPower ? Colors.red : card.currentAttackPower > card.attackPower ? Colors.green : Colors.grey
                                                   )
                                               ),
                                             ],
@@ -273,7 +282,10 @@ class BattleView extends GetView<BattleController> {
                                               color: Colors.transparent,
                                             ),
                                             child: card is SpellCardModel
-                                                ? SpellCardOnBattle(spellCardModel: card)
+                                                ? SpellCardOnBattle(
+                                                spellCardModel: card,
+                                              animateOnAppear: true,
+                                            )
                                                 : Center(child: Text("Ô ${index + 6}")),
                                           ),
                                         ),

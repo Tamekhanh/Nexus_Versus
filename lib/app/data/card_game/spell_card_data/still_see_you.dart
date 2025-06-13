@@ -32,31 +32,31 @@ Future<void> onPlace(BuildContext context) async {
   final field = isPlayer1 ? controller.onFieldP1 : controller.onFieldP2;
   final playerGrave = isPlayer1 ? controller.graveCardsP1 : controller.graveCardsP2;
   final playerHand = controller.getHand(controller.currentTurn.value);
-  // showFullScreenImage(
-  //   context,"image_card/spell_card/they_can_see_you.png",
-  //   text: Text(
-  //       "They Still See You",
-  //       style: TextStyle(
-  //         fontSize: MediaQuery.sizeOf(context).width * 0.075,
-  //         fontWeight: FontWeight.w900,
-  //         fontFamily: 'Cinzel', // Gothic style, nên import vào pubspec.yaml
-  //         letterSpacing: 2.0,
-  //         color: Colors.redAccent.shade100,
-  //         shadows: [
-  //           Shadow(
-  //             blurRadius: 4,
-  //             color: Colors.black87,
-  //             offset: Offset(2, 2),
-  //           ),
-  //           Shadow(
-  //             blurRadius: 10,
-  //             color: Colors.redAccent.withOpacity(0.7),
-  //             offset: Offset(0, 0),
-  //           ),
-  //         ],
-  //       )
-  //   ),
-  // );
+  showFullScreenImage(
+    context,"image_card/spell_card/they_can_see_you.png",
+    // text: Text(
+    //     "They Still See You",
+    //     style: TextStyle(
+    //       fontSize: MediaQuery.sizeOf(context).width * 0.075,
+    //       fontWeight: FontWeight.w900,
+    //       fontFamily: 'Cinzel', // Gothic style, nên import vào pubspec.yaml
+    //       letterSpacing: 2.0,
+    //       color: Colors.redAccent.shade100,
+    //       shadows: [
+    //         Shadow(
+    //           blurRadius: 4,
+    //           color: Colors.black87,
+    //           offset: Offset(2, 2),
+    //         ),
+    //         Shadow(
+    //           blurRadius: 10,
+    //           color: Colors.redAccent.withOpacity(0.7),
+    //           offset: Offset(0, 0),
+    //         ),
+    //       ],
+    //     )
+    // ),
+  );
 
   try {
     if (!playerGrave.isEmpty) {

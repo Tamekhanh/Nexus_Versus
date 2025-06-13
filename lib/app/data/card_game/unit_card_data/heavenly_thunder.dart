@@ -30,7 +30,7 @@ final HeavenlyThunder = UnitCardModel(
         if (kDebugMode) {
           print('Before damage: ${card.name} hp=${card.currentHealthPoints}');
         }
-        card.currentHealthPoints -= 1000;
+        card.currentHealthPoints -= 500;
         if (kDebugMode) {
           print('After damage: ${card.name} hp=${card.currentHealthPoints}');
         }
