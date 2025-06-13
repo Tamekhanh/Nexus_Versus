@@ -3,6 +3,7 @@ import 'card_model.dart';
 
 class SpellCardModel extends CardModel {
   final Color cardSpecial;
+  final int activeTurn;
 
   SpellCardModel({
     required super.id,
@@ -15,6 +16,7 @@ class SpellCardModel extends CardModel {
     super.onPlace,
     super.onAttack,
     super.onDead,
+    this.activeTurn = 0,
   });
 
   factory SpellCardModel.fromJson(
@@ -35,6 +37,7 @@ class SpellCardModel extends CardModel {
       onPlace: onPlace,
       onAttack: onAttack,
       onDead: onDead,
+      activeTurn: json['activeTurn'] ?? 0,
     );
   }
 

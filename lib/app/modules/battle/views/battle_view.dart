@@ -132,8 +132,18 @@ class BattleView extends GetView<BattleController> {
                                         if (card is UnitCardModel)
                                           Column(
                                             children: [
-                                              Text("HP: ${card.currentHealthPoints}", style: const TextStyle(fontSize: 12)),
-                                              Text("ATK: ${card.currentAttackPower}", style: const TextStyle(fontSize: 12)),
+                                              Text("HP: ${card.currentHealthPoints}",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: card.currentHealthPoints < card.healthPoints ? Colors.red : card.currentHealthPoints < card.healthPoints ? Colors.green : Colors.grey
+                                                  )
+                                              ),
+                                              Text("ATK: ${card.currentAttackPower}",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: card.currentAttackPower < card.attackPower ? Colors.red : card.currentAttackPower < card.attackPower ? Colors.green : Colors.grey
+                                                  )
+                                              ),
                                             ],
                                           ),
                                       ],
@@ -211,8 +221,18 @@ class BattleView extends GetView<BattleController> {
                                         if (card is UnitCardModel)
                                           Column(
                                             children: [
-                                              Text("HP: ${card.currentHealthPoints}", style: const TextStyle(fontSize: 12)),
-                                              Text("ATK: ${card.currentAttackPower}", style: const TextStyle(fontSize: 12)),
+                                              Text("HP: ${card.currentHealthPoints}",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                      color: card.currentHealthPoints < card.healthPoints ? Colors.red : card.currentHealthPoints < card.healthPoints ? Colors.green : Colors.grey
+                                                  )
+                                              ),
+                                              Text("ATK: ${card.currentAttackPower}",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                    color: card.currentAttackPower < card.attackPower ? Colors.red : card.currentAttackPower < card.attackPower ? Colors.green : Colors.grey
+                                                  )
+                                              ),
                                             ],
                                           ),
                                       ],

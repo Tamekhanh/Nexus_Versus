@@ -74,7 +74,7 @@ Future<void> onPlace(BuildContext context) async {
         if (kDebugMode) {
           print('Spell effect: Summoned ${lastUnit.name} from *your own* graveyard to hand.');
         };
-        await Future.delayed(const Duration(milliseconds: 1000));
+        await Future.delayed(const Duration(milliseconds: 2000));
       } else {
         if (kDebugMode) {
           print('Spell effect: No unit card found in your own graveyard.');

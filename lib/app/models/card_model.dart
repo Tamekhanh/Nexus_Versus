@@ -13,7 +13,7 @@ class CardModel {
   final void Function(BuildContext context)? onAttack;
   final void Function(BuildContext context)? onDead;
 
-  final List<String>? effects;
+  List<String>? effects;
 
   CardModel({
     required this.id,
