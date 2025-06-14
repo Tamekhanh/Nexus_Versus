@@ -10,7 +10,7 @@ import 'package:nexus_versus/app/modules/battle/controllers/battle_controller.da
 final HeavenlyThunder = UnitCardModel(
   id: "unit004",
   name: "Heavenly Thunder",
-  description: "Upon being summoned, a divine tempest is unleashed, striking all enemy units for 1000 damage. "
+  description: "Upon being summoned, a divine tempest is unleashed, striking all enemy units for 500 damage. "
       "Forged from the wrath of the skies, it brings judgment from above.",
   imageUrl: "image_card/unit_card/heavenly_thunder.png",
   level: 6,

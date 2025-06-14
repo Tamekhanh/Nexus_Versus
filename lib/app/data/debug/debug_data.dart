@@ -7,8 +7,8 @@ import 'package:nexus_versus/app/data/card_game/unit_card_data/god_hand.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/heavenly_thunder.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/red_cowboy.dart';
 import 'package:nexus_versus/app/data/card_game/spell_card_data/trip_tornado.dart';
+import 'package:nexus_versus/app/data/card_game/spell_card_data/nightingale_healthcare.dart';
 import 'package:nexus_versus/app/models/card_model.dart';
-import 'package:nexus_versus/app/models/spell_card_model.dart';
 
 Map<CardModel,int> debugData = {
   WarAndPeace : 1,
@@ -20,5 +20,6 @@ Map<CardModel,int> debugData = {
   BeautifulDay : 1,
   HeavenlyThunder : 1,
   TripTornado : 1,
+  Nightingale_HealthCare : 1,
 };
 
