@@ -28,7 +28,9 @@ class BattleView extends GetView<BattleController> {
     });
 
     return Scaffold(
-      body: Stack(
+      body: controller.isLoading == true ?
+          Center(child: CircularProgressIndicator(),) :
+      Stack(
         children: [
           /// Nội dung chính bên trên
 
@@ -58,19 +60,10 @@ class BattleView extends GetView<BattleController> {
                                     final card = controller.onFieldP1[index + 5];
                                     return Column(
                                       children: [
-                                        // TextButton(
-                                        //   onPressed: () {
-                                        //     controller.onFieldP2[index + 5] = null;
-                                        //     controller.update();
-                                        //   },
-                                        //   child: Text("Delete ${index + 6}"),
-                                        // ),
                                         GestureDetector(
-                                          // onTap: () {
-                                          //   if (controller.handCards[controller.selectedCardIndex.value] is SpellCardModel) {
-                                          //     controller.placeCardonFieldP2(index + 5, context);
-                                          //   }
-                                          // },
+                                          onDoubleTap: () {
+                                            controller.cardInformation(card as SpellCardModel);
+                                          },
                                           child: Container(
                                             width: cardWidthOnbattle,
                                             height: cardWidthOnbattle * (8 / 5),
@@ -82,7 +75,7 @@ class BattleView extends GetView<BattleController> {
                                             ),
                                             child: card is SpellCardModel
                                                 ? SpellCardOnBattle(
-                                                spellCardModel: card,
+                                              spellCardModel: card,
                                               animateOnAppear: true,
                                             )
                                                 : Center(child: Text("Ô ${index + 6}")),
@@ -102,19 +95,20 @@ class BattleView extends GetView<BattleController> {
                                     final card = controller.onFieldP1[index];
                                     return Column(
                                       children: [
-                                        // TextButton(
-                                        //   onPressed: () {
-                                        //     controller.onFieldP2[index] = null;
-                                        //     controller.update();
-                                        //   },
-                                        //   child: Text("Delete ${index + 1}"),
-                                        // ),
                                         GestureDetector(
-                                          // onTap: () {
-                                          //   if (controller.handCards[controller.selectedCardIndex.value] is UnitCardModel) {
-                                          //     controller.placeCardonFieldP2(index,context);
-                                          //   }
-                                          // },
+                                          onTap: () {
+                                            final attackerIndex = controller.selectedAttackerIndex.value;
+                                            if (attackerIndex != -1) {
+                                              controller.attack(
+                                                attackerPlayer: Player.player2,       // người chơi là P2
+                                                attackerIndex: attackerIndex,         // quân P2 vừa chọn
+                                                targetIndex: index,              // quân P1 đang ở ô này
+                                              );
+                                            }
+                                          },
+                                          onDoubleTap: () {
+                                            controller.cardInformation(card as UnitCardModel);
+                                          },
                                           child: Container(
                                             width: cardWidthOnbattle,
                                             height: cardWidthOnbattle * (8 / 5),
@@ -129,8 +123,9 @@ class BattleView extends GetView<BattleController> {
                                             ),
                                             child: card is UnitCardModel
                                                 ? UnitCardOnBattle(
-                                                unitCardModel: card,
+                                              unitCardModel: card,
                                               animateOnAppear: true,
+                                              isSelected: (controller.selectedAttackerIndex.value == index && controller.currentTurn.value == Player.player1),
                                             )
                                                 : Center(child: Text("Ô ${index + 1}")),
                                           ),
@@ -191,17 +186,14 @@ class BattleView extends GetView<BattleController> {
                                     final card = controller.onFieldP2[index];
                                     return Column(
                                       children: [
-                                        // TextButton(
-                                        //   onPressed: () {
-                                        //     controller.onFieldP2[index] = null;
-                                        //     controller.update();
-                                        //   },
-                                        //   child: Text("Delete ${index + 1}"),
-                                        // ),
                                         GestureDetector(
                                           onTap: () {
-                                            if (controller.handCardsP2[controller.selectedCardIndex.value] is UnitCardModel) {
+                                            if (controller.selectedCardIndex.value >= 0 &&
+                                                controller.handCardsP2[controller.selectedCardIndex.value] is UnitCardModel &&
+                                                controller.onFieldP2[index] == null) {
                                               controller.placeCardOnField(player: Player.player2, fieldIndex: index, context: context);
+                                            } else {
+                                              controller.selectAttacker(index);
                                             }
                                           },
                                           onDoubleTap: () {
@@ -221,8 +213,9 @@ class BattleView extends GetView<BattleController> {
                                             ),
                                             child: card is UnitCardModel
                                                 ? UnitCardOnBattle(
-                                                unitCardModel: card,
+                                              unitCardModel: card,
                                               animateOnAppear: true,
+                                              isSelected: (controller.selectedAttackerIndex.value == index && controller.currentTurn.value == Player.player2),
                                             )
                                                 : Center(child: Text("Ô ${index + 1}")),
                                           ),
@@ -232,8 +225,8 @@ class BattleView extends GetView<BattleController> {
                                             children: [
                                               Text("HP: ${card.currentHealthPoints}",
                                                   style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: card.currentHealthPoints < card.healthPoints ? Colors.red : card.currentHealthPoints > card.healthPoints ? Colors.green : Colors.grey
+                                                      fontSize: 12,
+                                                      color: card.currentHealthPoints < card.healthPoints ? Colors.red : card.currentHealthPoints > card.healthPoints ? Colors.green : Colors.grey
                                                   )
                                               ),
                                               Text("ATK: ${card.currentAttackPower}",
@@ -256,13 +249,6 @@ class BattleView extends GetView<BattleController> {
                                     final card = controller.onFieldP2[index + 5];
                                     return Column(
                                       children: [
-                                        // TextButton(
-                                        //   onPressed: () {
-                                        //     controller.onFieldP2[index + 5] = null;
-                                        //     controller.update();
-                                        //   },
-                                        //   child: Text("Delete ${index + 6}"),
-                                        // ),
                                         GestureDetector(
                                           onTap: () {
                                             if (controller.handCardsP2[controller.selectedCardIndex.value] is SpellCardModel) {
@@ -283,7 +269,7 @@ class BattleView extends GetView<BattleController> {
                                             ),
                                             child: card is SpellCardModel
                                                 ? SpellCardOnBattle(
-                                                spellCardModel: card,
+                                              spellCardModel: card,
                                               animateOnAppear: true,
                                             )
                                                 : Center(child: Text("Ô ${index + 6}")),
@@ -436,9 +422,21 @@ class BattleView extends GetView<BattleController> {
               ),
             ),
           ),
+
+          /// Loading spinner
+          Obx(() {
+            if (controller.isLoading.value) {
+              return Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
         ],
       ),
     );
   }
 }
-

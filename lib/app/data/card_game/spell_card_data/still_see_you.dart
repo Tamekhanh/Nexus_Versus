@@ -34,28 +34,6 @@ Future<void> onPlace(BuildContext context) async {
   final playerHand = controller.getHand(controller.currentTurn.value);
   showFullScreenImage(
     context,"image_card/spell_card/they_can_see_you.png",
-    // text: Text(
-    //     "They Still See You",
-    //     style: TextStyle(
-    //       fontSize: MediaQuery.sizeOf(context).width * 0.075,
-    //       fontWeight: FontWeight.w900,
-    //       fontFamily: 'Cinzel', // Gothic style, nên import vào pubspec.yaml
-    //       letterSpacing: 2.0,
-    //       color: Colors.redAccent.shade100,
-    //       shadows: [
-    //         Shadow(
-    //           blurRadius: 4,
-    //           color: Colors.black87,
-    //           offset: Offset(2, 2),
-    //         ),
-    //         Shadow(
-    //           blurRadius: 10,
-    //           color: Colors.redAccent.withOpacity(0.7),
-    //           offset: Offset(0, 0),
-    //         ),
-    //       ],
-    //     )
-    // ),
   );
 
   try {
@@ -90,6 +68,13 @@ Future<void> onPlace(BuildContext context) async {
       if (kDebugMode) {
         print('Spell effect: Your graveyard is empty.');
       }
+    }
+    await Future.delayed(const Duration(milliseconds: 2000));
+    final spellIndex = field.indexWhere((card) => card?.id == StillSeeYou.id);
+    if (spellIndex != -1) {
+      playerGrave.add(field[spellIndex]);
+      field[spellIndex] = null;
+      field.refresh();
     }
   } catch (e) {
     debugPrint("Error while summoning a unit from the graveyard: $e");

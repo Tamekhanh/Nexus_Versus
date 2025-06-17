@@ -17,10 +17,13 @@ final Nightingale_HealthCare = SpellCardModel(
     onPlace(context);
   },
   onAttack: (context) {},
-  onDead: (context) {
+  onDead: (context, player) {
     onDead(context);
   },
   series: ["War of Humankind"],
+  onActive: (context, player) {
+    onActive(context, player);
+  },
 );
 
 Future<void> onPlace(BuildContext context) async {
@@ -38,6 +41,35 @@ Future<void> onPlace(BuildContext context) async {
         card.currentHealthPoints += 500;
         card.effects ??= [];
         card.effects!.add("Nightingale_HealthCare");
+      }
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print("Error in Nightingale HealthCare onPlace: $e");
+    }
+  }
+}
+
+Future<void> onActive(BuildContext context, Player player) async {
+  final controller = Get.find<BattleController>();
+  final enemy = player == Player.player1 ? Player.player2 : Player.player1;
+  final playerField = controller.getField(player);
+
+  try {
+    for (int i = 0; i < playerField.length; i++) {
+      final card = playerField[i];
+      if (kDebugMode) {
+        print('Card at $i is ${card.runtimeType}');
+      }
+      if (card is UnitCardModel) {
+        card.currentHealthPoints += 500;
+        card.effects ??= [];
+        if (card.effects?.contains("Nightingale_HealthCare") == false) {
+          if (kDebugMode) {
+            print("Adding Nightingale_HealthCare effect to ${card.name}");
+          }
+          card.effects!.add("Nightingale_HealthCare");
+        }
       }
     }
   } catch (e) {

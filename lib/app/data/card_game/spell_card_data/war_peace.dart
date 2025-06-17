@@ -17,7 +17,7 @@ final WarAndPeace = SpellCardModel(
     onPlace(context);
   },
   onAttack: (context) {},
-  onDead: (context) {
+  onDead: (context, player) {
     onDead(context);
   },
   series: ["Crow"],

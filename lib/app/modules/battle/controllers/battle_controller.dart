@@ -18,6 +18,7 @@ extension ListExtension<T> on List<T> {
 }
 
 class BattleController extends GetxController {
+  var isLoading = true.obs;
   var hoveredCardIndex = (-1).obs;
   var selectedCardIndex = (-1).obs;
   final count = 0.obs;
@@ -53,31 +54,40 @@ class BattleController extends GetxController {
     final deck = getDeck(player);
     deck.shuffle();
     deck.refresh();
-    print('Deck for $player has been shuffled.');
+    if (kDebugMode) {
+      print('Deck for $player has been shuffled.');
+    }
   }
 
   @override
   void onInit() {
     super.onInit();
 
-    final initialCardsP1 = debugData.entries
-        .expand((entry) => List.generate(entry.value, (_) => entry.key))
-        .toList();
-    final initialCardsP2 = debugData.entries
-        .expand((entry) => List.generate(entry.value, (_) => entry.key))
-        .toList();
+    isLoading.value = true; // Start loading
 
-    handCardsP1.assignAll(initialCardsP1);
-    deckCardsP1.assignAll(List.of(initialCardsP1));
-    handCardsP2.assignAll(initialCardsP2);
-    deckCardsP2.assignAll(List.of(initialCardsP2));
+    Future.delayed(const Duration(milliseconds: 500), () {
+      final initialCardsP1 = debugData.entries
+          .expand((entry) => List.generate(entry.value, (_) => entry.key))
+          .toList();
+      final initialCardsP2 = debugData.entries
+          .expand((entry) => List.generate(entry.value, (_) => entry.key))
+          .toList();
 
-    shuffleDeck(Player.player1);
-    shuffleDeck(Player.player2);
+      handCardsP1.assignAll(initialCardsP1);
+      deckCardsP1.assignAll(List.of(initialCardsP1));
+      handCardsP2.assignAll(initialCardsP2);
+      deckCardsP2.assignAll(List.of(initialCardsP2));
 
-    if (isP1AI && currentTurn.value == Player.player1) {
-      Future.delayed(const Duration(milliseconds: 500), aiPlayTurn);
-    }
+      shuffleDeck(Player.player1);
+      shuffleDeck(Player.player2);
+
+      isLoading.value = false; // Finish loading
+
+      if (isP1AI && currentTurn.value == Player.player1) {
+        Future.delayed(const Duration(milliseconds: 500), aiPlayTurn);
+      }
+    });
+    isLoading = false.obs;
   }
 
   @override
@@ -96,6 +106,9 @@ class BattleController extends GetxController {
 
   RxList<CardModel?> getHand(Player player) =>
       player == Player.player1 ? handCardsP1 : handCardsP2;
+
+  RxList<CardModel?> getGrave(Player player) =>
+      player == Player.player1 ? graveCardsP1 : graveCardsP2;
 
   Future<void> _playSelectSound() async {
     try {
@@ -137,15 +150,26 @@ class BattleController extends GetxController {
     if (fieldIndex <= 4 && selected is! UnitCardModel) return;
     if (fieldIndex >= 5 && selected is! SpellCardModel) return;
 
-
+    /// 1. Tạo bản sao trước khi đặt
+    CardModel? previewCard;
     if (selected is UnitCardModel) {
-      final placedCard = selected.toInBattle();
-      placedCard.currentHealthPoints = placedCard.healthPoints;
-      field[fieldIndex] = placedCard;
-      placedCard.onPlace?.call(context);
+      previewCard = selected.toInBattle();
+      (previewCard as UnitCardModel).currentHealthPoints = previewCard.healthPoints;
     } else if (selected is SpellCardModel) {
-      field[fieldIndex] = selected;
-      selected.onPlace?.call(context);
+      previewCard = selected;
+    }
+
+
+    /// 3. Kiểm tra lại ô trống (quân địch có thể đã phá huỷ bài)
+    if (field[fieldIndex] != null) return;
+
+    /// 4. Gán bài và gọi onPlace
+    field[fieldIndex] = previewCard;
+
+    if (previewCard is UnitCardModel) {
+      previewCard.onPlace?.call(context);
+    } else if (previewCard is SpellCardModel) {
+      previewCard.onPlace?.call(context);
     }
 
     _playPlaceSound();
@@ -156,7 +180,9 @@ class BattleController extends GetxController {
     field.refresh();
     hand.refresh();
 
-    print('[${player.name}] placed card at index $fieldIndex');
+    if (kDebugMode) {
+      print('[${player.name}] placed card at index $fieldIndex');
+    }
   }
 
   void placeCardOnFieldP1(int fieldIndex, BuildContext context) {
@@ -207,14 +233,19 @@ class BattleController extends GetxController {
   }
 
   Future<void> aiPlayTurn() async {
-    if (currentTurn.value != Player.player1) return;
-    if (_isAITurnRunning) return;
+    if (currentTurn.value != Player.player1 || _isAITurnRunning) return;
     _isAITurnRunning = true;
-    drawCard(player: Player.player1);
-    if (kDebugMode) {
-      print('AI thinking...');
-    }
 
+    print('[AI] ---- Turn Start ----');
+
+    // 0. Reset số lượt tấn công
+    resetAttackAttempts(Player.player1);
+
+    // 1. Rút bài
+    drawCard(player: Player.player1);
+    await Future.delayed(const Duration(milliseconds: 400));
+
+    // 2. Đặt bài nếu có thể
     for (int i = 0; i < handCardsP1.length; i++) {
       final card = handCardsP1[i];
       if (card == null) continue;
@@ -223,41 +254,51 @@ class BattleController extends GetxController {
       int? emptyIndex;
 
       if (card is UnitCardModel) {
-        emptyIndex = _findEmptySlot(field, 0, 4);
+        emptyIndex = _findEmptySlot(field, 0, 4); // Lính
       } else if (card is SpellCardModel) {
-        emptyIndex = _findEmptySlot(field, 5, field.length - 1);
+        emptyIndex = _findEmptySlot(field, 5, 9); // Phép
       }
 
       if (emptyIndex != null) {
-        final context = Get.overlayContext;  // <-- Dùng overlayContext thay vì Get.context
+        final context = Get.overlayContext;
         if (context != null) {
           selectedCardIndex.value = i;
           placeCardOnField(player: Player.player1, fieldIndex: emptyIndex, context: context);
-
-          card.onPlace?.call(context);
-        } else {
-          if (kDebugMode) {
-            print('Warning: No overlay context available to place card');
-          }
+          await Future.delayed(const Duration(milliseconds: 600));
+          break; // Đặt 1 lá mỗi lượt
         }
-
-        drawCard(player: Player.player1);
-
-        currentTurn.value = Player.player2;
-        if (kDebugMode) {
-          print('AI placed card at $emptyIndex and ended turn.');
-        }
-        _isAITurnRunning = false;
-        return;
       }
     }
 
-    currentTurn.value = Player.player2;
-    if (kDebugMode) {
-      print('AI cannot play any card, turn ended.');
+    // 3. Tấn công nếu có thể
+    for (int attackerIndex = 0; attackerIndex < onFieldP1.length; attackerIndex++) {
+      final attacker = onFieldP1[attackerIndex];
+      if (attacker is UnitCardModel && attacker.attackAttempt > 0) {
+        for (int targetIndex = 0; targetIndex < onFieldP2.length; targetIndex++) {
+          final target = onFieldP2[targetIndex];
+          if (target is UnitCardModel) {
+            selectedAttackerIndex.value = attackerIndex;
+            await Future.delayed(const Duration(milliseconds: 500)); // Delay giữa các đòn tấn công
+            attack(
+              attackerPlayer: Player.player1,
+              attackerIndex: attackerIndex,
+              targetIndex: targetIndex,
+            );
+            selectedAttackerIndex.value = -1; // Clear selection after attack
+            break;
+          }
+        }
+      }
     }
+
+    // 4. Kết thúc lượt
+    await Future.delayed(const Duration(milliseconds: 400));
+    currentTurn.value = Player.player2;
+    print('[AI] ---- Turn End ----');
+
     _isAITurnRunning = false;
   }
+
 
 
   int? _findEmptySlot(RxList<CardModel?> field, int start, int end) {
@@ -277,6 +318,22 @@ class BattleController extends GetxController {
         Future.delayed(const Duration(milliseconds: 500), aiPlayTurn);
       }
     }
+    resetAttackAttempts(Player.player2);
+
+    for (final card in onFieldP2) {
+      if (card is UnitCardModel) {
+        card.onActive?.call(battleContext, Player.player2);
+      } else if (card is SpellCardModel) {
+        card.onActive?.call(battleContext, Player.player2);
+      }
+    }
+    for (final card in onFieldP1) {
+      if (card is UnitCardModel) {
+        card.onActive?.call(battleContext, Player.player1);
+      } else if (card is SpellCardModel) {
+        card.onActive?.call(battleContext, Player.player1);
+      }
+    }
   }
 
   void selectAttacker(int index) {
@@ -292,18 +349,20 @@ class BattleController extends GetxController {
     final field = getField(player);
     final card = field.elementAtOrNull(index);
     if (card == null) return;
-    player == Player.player1
-        ? graveCardsP1.add(card)
-        : graveCardsP2.add(card);
+
+    // Đưa vào mộ
+    (player == Player.player1 ? graveCardsP1 : graveCardsP2).add(card);
+
+    // Gọi hiệu ứng chết, truyền đúng người sở hữu
     if (card is UnitCardModel) {
-      card.onDead?.call(battleContext);
+      card.onDead?.call(battleContext, player);
       if (kDebugMode) {
         print('Card ${card.name} is dead at index $index');
       }
     } else if (card is SpellCardModel) {
-      card.onDead?.call(battleContext);
+      card.onDead?.call(battleContext, player);
       if (kDebugMode) {
-        print('Spell ${card.name} is deactivate at index $index');
+        print('Spell ${card.name} is deactivated at index $index');
       }
     }
   }
@@ -315,40 +374,64 @@ class BattleController extends GetxController {
     );
   }
 
-  // void attackTarget(int targetIndex) {
-  //   final attackerIndex = selectedAttackerIndex.value;
-  //   if (attackerIndex == -1) return;
-  //
-  //   final attacker = onFieldP2[attackerIndex];
-  //   final target = onFieldP1.elementAtOrNull(targetIndex);
-  //
-  //   if (attacker is! UnitCardModel) return;
-  //
-  //   if (target == null) {
-  //     // Tấn công trực tiếp nếu không có mục tiêu (ví dụ như Nexus)
-  //     print('Player 2 attacks Nexus directly with ${attacker.name} for ${attacker.attack} damage');
-  //     // TODO: Giảm máu Nexus
-  //   } else if (target is UnitCardModel) {
-  //     // Tấn công lẫn nhau
-  //     target -= attacker.attack;
-  //     attacker.hp -= target.attack;
-  //     print('Combat: ${attacker.name} (${attacker.hp}) vs ${target.name} (${target.hp})');
-  //
-  //     // Kiểm tra nếu thẻ chết
-  //     if (target.hp <= 0) {
-  //       onFieldP1[targetIndex] = null;
-  //       print('${target.name} was destroyed!');
-  //     }
-  //     if (attacker.hp <= 0) {
-  //       onFieldP2[attackerIndex] = null;
-  //       print('${attacker.name} was destroyed!');
-  //     }
-  //
-  //     onFieldP1.refresh();
-  //     onFieldP2.refresh();
-  //   }
-  //
-  //   selectedAttackerIndex.value = -1;
-  // }
+  void attack({
+    required Player attackerPlayer,
+    required int attackerIndex,
+    required int targetIndex,
+  }) {
+    final attackerField = getField(attackerPlayer);
+    final targetPlayer = attackerPlayer == Player.player1 ? Player.player2 : Player.player1;
+    final targetField = getField(targetPlayer);
+
+    final attackerCard = attackerField.elementAtOrNull(attackerIndex);
+    final targetCard = targetField.elementAtOrNull(targetIndex);
+
+    if (attackerCard is! UnitCardModel) {
+      print('No valid attacker at index $attackerIndex');
+      return;
+    } else {
+      if (attackerCard.attackAttempt <= 0) {
+        print('Attacker ${attackerCard.name} has no attack attempts left.');
+        return;
+      }
+      if (targetCard is! UnitCardModel) {
+        print('No valid target at index $targetIndex');
+        return;
+      }
+
+
+
+      // Tấn công!
+      targetCard.currentHealthPoints -= attackerCard.currentAttackPower;
+      print(
+          '[ATTACK] ${attackerPlayer.name}\'s ${attackerCard.name} attacked ${targetPlayer.name}\'s ${targetCard.name} '
+              'for ${attackerCard.currentAttackPower} damage. Target HP: ${targetCard.currentHealthPoints}');
+
+      // Nếu mục tiêu chết
+      if (targetCard.currentHealthPoints <= 0) {
+        onDead(targetIndex, player: targetPlayer);
+        targetField[targetIndex] = null;
+      }
+
+      // Clear attacker selection (nếu muốn)
+      if (attackerPlayer == Player.player2) {
+        selectedAttackerIndex.value = -1;
+      }
+      attackerCard.attackAttempt--;
+      targetField.refresh();
+    }
+  }
+
+  void resetAttackAttempts(Player player) {
+    final field = getField(player);
+    for (final card in field) {
+      if (card is UnitCardModel) {
+        card.attackAttempt = card.maxAttackAttempt;
+      }
+    }
+    field.refresh();
+    debugPrint('[TURN] Reset attackAttempt for ${player.name}');
+  }
 
 }
+

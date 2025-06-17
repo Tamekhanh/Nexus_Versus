@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexus_versus/app/modules/battle/controllers/battle_controller.dart';
 
 class CardModel {
   final String id;
@@ -11,7 +12,9 @@ class CardModel {
   // Thêm các callback vào CardModel
   final void Function(BuildContext context)? onPlace;
   final void Function(BuildContext context)? onAttack;
-  final void Function(BuildContext context)? onDead;
+  final void Function(BuildContext context, Player owner)? onDead;
+  void Function(BuildContext context, Player owner)? onEnemyPlace;
+  final void Function(BuildContext context, Player owner)? onActive;
 
   List<String>? effects;
 
@@ -25,6 +28,8 @@ class CardModel {
     this.onPlace,
     this.onAttack,
     this.onDead,
+    this.onEnemyPlace,
+    this.onActive,
     this.effects,
   });
 
@@ -32,7 +37,9 @@ class CardModel {
       Map<String, dynamic> json, {
         void Function(BuildContext context)? onPlace,
         void Function(BuildContext context)? onAttack,
-        void Function(BuildContext context)? onDead,
+        void Function(BuildContext context, Player owner)? onDead,
+        void Function(BuildContext context, Player owner)? onEnemyPlace,
+        void Function(BuildContext context, Player owner)? onActive,
       }) {
     return CardModel(
       id: json['id'],
@@ -44,6 +51,8 @@ class CardModel {
       onPlace: onPlace,
       onAttack: onAttack,
       onDead: onDead,
+      onEnemyPlace: onEnemyPlace,
+      onActive: onActive,
       effects: json['effects'] != null ? List<String>.from(json['effects']) : null,
     );
   }

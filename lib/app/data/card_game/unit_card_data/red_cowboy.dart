@@ -17,7 +17,7 @@ final RedCowBoy = UnitCardModel(
     quickdraw();
   },
   onAttack: (context) {},
-  onDead: (context) {lastBullet();},
+  onDead: (context, player) {lastBullet(player);},
   cardSpecial: Colors.redAccent,
   series: ["Cowboy"],
 );
@@ -33,14 +33,8 @@ void quickdraw() {
   debugPrint('active skill Quick Draw - Draw a card');
 }
 
-void lastBullet() {
+void lastBullet(Player owner) {
   final controller = Get.find<BattleController>();
-  final isPlayer1 = controller.currentTurn.value == Player.player1;
-
-  final player = isPlayer1 ? Player.player1 : Player.player2;
-
-  controller.drawCard(player: player);
-
-  debugPrint('active skill Last Bullet - Draw a card');
+  controller.drawCard(player: owner);
 }
 

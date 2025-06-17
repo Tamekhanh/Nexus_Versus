@@ -5,6 +5,7 @@ import 'package:nexus_versus/app/data/card_game/spell_card_data/war_peace.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/black_crow.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/god_hand.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/heavenly_thunder.dart';
+import 'package:nexus_versus/app/data/card_game/unit_card_data/kurohime.dart';
 import 'package:nexus_versus/app/data/card_game/unit_card_data/red_cowboy.dart';
 import 'package:nexus_versus/app/data/card_game/spell_card_data/trip_tornado.dart';
 import 'package:nexus_versus/app/data/card_game/spell_card_data/nightingale_healthcare.dart';
@@ -21,5 +22,6 @@ Map<CardModel,int> debugData = {
   HeavenlyThunder : 1,
   TripTornado : 1,
   Nightingale_HealthCare : 1,
+  Kurohime : 1,
 };
 

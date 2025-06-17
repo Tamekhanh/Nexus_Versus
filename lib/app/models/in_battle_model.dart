@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:nexus_versus/app/models/unit_card_model.dart';
 import 'package:flutter/material.dart';
+import 'package:nexus_versus/app/modules/battle/controllers/battle_controller.dart';
 
 class InBattleModel extends UnitCardModel {
   int currentHealthPoints;  // Bỏ final để thay đổi được
@@ -21,7 +22,7 @@ class InBattleModel extends UnitCardModel {
     List<String>? series,
     void Function(BuildContext context)? onPlace,
     void Function(BuildContext context)? onAttack,
-    void Function(BuildContext context)? onDead,
+    void Function(BuildContext context, Player owner)? onDead,
     Color cardSpecial = Colors.blueGrey,
   })  : currentHealthPoints = currentHealthPoints ?? healthPoints,
         currentAttackPower = currentAttackPower ?? attackPower,

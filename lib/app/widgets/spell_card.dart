@@ -82,6 +82,7 @@ class _SpellCardState extends State<SpellCard> with SingleTickerProviderStateMix
               children: [
                 _buildHeader(isSmall, spellCardModel),
                 _buildImageAndStars(isSmall, spellCardModel),
+                SizedBox(height: isSmall ? 2 : 8),
                 _buildDescription(context, isSmall, spellCardModel),
               ],
             ),

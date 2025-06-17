@@ -18,14 +18,22 @@ final BeautifulDay = SpellCardModel(
   series: ["Yokai"],
 );
 
-void onPlace(BuildContext context) {
+void onPlace(BuildContext context) async{
   // This function can be used to handle any additional logic when the card is placed
   // For example, you might want to trigger an animation or update the game state
   final controller = Get.find<BattleController>();
   final isPlayer1 = controller.currentTurn.value == Player.player1;
+  final field = isPlayer1 ? controller.onFieldP1 : controller.onFieldP2;
+  final playerGrave = isPlayer1 ? controller.graveCardsP1 : controller.graveCardsP2;
   final player = isPlayer1 ? Player.player1 : Player.player2;
   controller.drawMultipleCards(2, player: player);
 
-
+  await Future.delayed(const Duration(milliseconds: 2000));
+  final spellIndex = field.indexWhere((card) => card?.id == BeautifulDay.id);
+  if (spellIndex != -1) {
+    playerGrave.add(field[spellIndex]);
+    field[spellIndex] = null;
+    field.refresh();
+  }
 
 }

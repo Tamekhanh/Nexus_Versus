@@ -82,6 +82,7 @@ class _UnitCardState extends State<UnitCard> with SingleTickerProviderStateMixin
               children: [
                 _buildHeader(unitCardModel, isSmall),
                 _buildImageAndStars(unitCardModel, isSmall),
+                SizedBox(height: isSmall ? 2 : 8),
                 _buildDescription(context, unitCardModel, isSmall),
                 _buildStats(unitCardModel, isSmall),
               ],

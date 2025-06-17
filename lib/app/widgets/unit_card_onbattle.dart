@@ -4,11 +4,13 @@ import 'package:nexus_versus/app/models/unit_card_model.dart';
 class UnitCardOnBattle extends StatefulWidget {
   final UnitCardModel unitCardModel;
   final bool animateOnAppear;
+  final bool isSelected;
 
   const UnitCardOnBattle({
     super.key,
     required this.unitCardModel,
     this.animateOnAppear = false,
+    this.isSelected = false,
   });
 
   @override
@@ -18,6 +20,7 @@ class UnitCardOnBattle extends StatefulWidget {
 class _UnitCardOnBattleState extends State<UnitCardOnBattle> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
+
 
   @override
   void initState() {
@@ -63,8 +66,8 @@ class _UnitCardOnBattleState extends State<UnitCardOnBattle> with SingleTickerPr
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2),
               border: Border.all(
-                color: Colors.black54,
-                width: 2,
+                color: widget.isSelected ? Colors.orangeAccent : Colors.black54,
+                width: widget.isSelected ? 4 : 2,
               ),
             ),
             child: Padding(

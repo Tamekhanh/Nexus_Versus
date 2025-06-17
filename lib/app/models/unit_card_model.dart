@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexus_versus/app/modules/battle/controllers/battle_controller.dart';
 import 'card_model.dart';
 
 class UnitCardModel extends CardModel {
@@ -8,6 +9,9 @@ class UnitCardModel extends CardModel {
 
   int currentHealthPoints;
   int currentAttackPower;
+
+  int attackAttempt;
+  int maxAttackAttempt;
 
   UnitCardModel({
     required super.id,
@@ -22,14 +26,21 @@ class UnitCardModel extends CardModel {
     super.onPlace,
     super.onAttack,
     super.onDead,
+    super.onEnemyPlace,
+    super.onActive,
+    this.maxAttackAttempt = 1,
+
   }): currentHealthPoints = healthPoints,
-        currentAttackPower = attackPower;
+        currentAttackPower = attackPower,
+        attackAttempt = maxAttackAttempt;
 
   factory UnitCardModel.fromJson(
       Map<String, dynamic> json, {
         void Function(BuildContext context)? onPlace,
         void Function(BuildContext context)? onAttack,
-        void Function(BuildContext context)? onDead,
+        void Function(BuildContext context, Player owner)? onDead,
+        void Function(BuildContext context, Player owner)? onEnemyPlace,
+        void Function(BuildContext context, Player owner)? onActive,
         Color cardSpecial = Colors.blueGrey,
       }) {
     return UnitCardModel(
@@ -45,6 +56,9 @@ class UnitCardModel extends CardModel {
       onPlace: onPlace,
       onAttack: onAttack,
       onDead: onDead,
+      onEnemyPlace: onEnemyPlace,
+      onActive: onActive,
+      maxAttackAttempt: json['maxAttackAttempt'] ?? 1,
     );
   }
 
@@ -71,6 +85,9 @@ class UnitCardModel extends CardModel {
       onPlace: onPlace,
       onAttack: onAttack,
       onDead: onDead,
+      onEnemyPlace: onEnemyPlace,
+      onActive: onActive,
+      maxAttackAttempt: maxAttackAttempt,
     );
   }
 }
