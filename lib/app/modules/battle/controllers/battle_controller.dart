@@ -46,6 +46,13 @@ class BattleController extends GetxController {
   Rx<Player> currentTurn = Player.player1.obs;
   bool _isAITurnRunning = false;
 
+  final turnCount = 1.obs;
+
+  var isDrawingCard = false.obs;
+  var animatedCard = Rx<CardModel?>(null);
+  var drawCardStartOffset = const Offset(0, 0); // Vị trí bắt đầu animation
+  var drawCardEndOffset = const Offset(0, 0);   // Vị trí kết thúc animation
+
   void setBattleContext(BuildContext context) {
     battleContext = context;
   }
@@ -73,10 +80,12 @@ class BattleController extends GetxController {
           .expand((entry) => List.generate(entry.value, (_) => entry.key))
           .toList();
 
-      handCardsP1.assignAll(initialCardsP1);
       deckCardsP1.assignAll(List.of(initialCardsP1));
-      handCardsP2.assignAll(initialCardsP2);
       deckCardsP2.assignAll(List.of(initialCardsP2));
+      deckCardsP1.shuffle();
+      deckCardsP2.shuffle();
+      drawMultipleCards(5, player: Player.player1);
+      drawMultipleCards(5, player: Player.player2);
 
       shuffleDeck(Player.player1);
       shuffleDeck(Player.player2);
@@ -88,6 +97,11 @@ class BattleController extends GetxController {
       }
     });
     isLoading = false.obs;
+  }
+
+  void onReady() {
+    super.onReady();
+    showTurnDialog(turnCount.value);
   }
 
   @override
@@ -114,10 +128,12 @@ class BattleController extends GetxController {
     try {
       await _audioPlayerCardSelect.play(
         AssetSource('sfx/Card_Select.mp3'),
-        volume: 0.5,
+        volume: 0.2,
       );
     } catch (e) {
-      print('Error playing select sound: $e');
+      if (kDebugMode) {
+        print('Error playing select sound: $e');
+      }
     }
   }
 
@@ -125,10 +141,12 @@ class BattleController extends GetxController {
     try {
       await _audioPlayerCardPlace.play(
         AssetSource('sfx/Card_Apply.mp3'),
-        volume: 0.5,
+        volume: 0.2,
       );
     } catch (e) {
-      print('Error playing place sound: $e');
+      if (kDebugMode) {
+        print('Error playing place sound: $e');
+      }
     }
   }
 
@@ -204,7 +222,9 @@ class BattleController extends GetxController {
     final hand = getHand(player);
 
     if (deck.isEmpty) {
-      print('Deck is empty, cannot draw card for $player');
+      if (kDebugMode) {
+        print('Deck is empty, cannot draw card for $player');
+      }
       return;
     }
 
@@ -214,7 +234,11 @@ class BattleController extends GetxController {
     deck.refresh();
     hand.refresh();
 
-    print('[$player] Drew card: $drawnCard');
+    if (kDebugMode) {
+      print('[$player] Drew card: $drawnCard');
+    }
+    Future.delayed(const Duration(milliseconds: 500), aiPlayTurn);
+
   }
 
   void drawMultipleCards(int count, {required Player player}) {
@@ -232,45 +256,89 @@ class BattleController extends GetxController {
     }
   }
 
+  Future<void> drawCardWithAnimation({required Player player, required Offset start, required Offset end}) async {
+    final deck = getDeck(player);
+    final hand = getHand(player);
+
+    if (deck.isEmpty) return;
+
+    final card = deck.removeLast();
+
+    isDrawingCard.value = true;
+    animatedCard.value = card;
+    drawCardStartOffset = start;
+    drawCardEndOffset = end;
+
+    await Future.delayed(const Duration(milliseconds: 400)); // animation duration
+
+    hand.add(card);
+    deck.refresh();
+    hand.refresh();
+
+    isDrawingCard.value = false;
+    animatedCard.value = null;
+  }
+
+
   Future<void> aiPlayTurn() async {
     if (currentTurn.value != Player.player1 || _isAITurnRunning) return;
     _isAITurnRunning = true;
 
-    print('[AI] ---- Turn Start ----');
+    if (kDebugMode) print('[AI] ---- Turn Start ----');
 
-    // 0. Reset số lượt tấn công
     resetAttackAttempts(Player.player1);
-
-    // 1. Rút bài
     drawCard(player: Player.player1);
     await Future.delayed(const Duration(milliseconds: 400));
 
-    // 2. Đặt bài nếu có thể
+    // Tách hand thành 2 nhóm: Units và Spells
+    final units = <MapEntry<int, UnitCardModel>>[];
+    final spells = <MapEntry<int, SpellCardModel>>[];
+
     for (int i = 0; i < handCardsP1.length; i++) {
       final card = handCardsP1[i];
-      if (card == null) continue;
-
-      final field = onFieldP1;
-      int? emptyIndex;
-
       if (card is UnitCardModel) {
-        emptyIndex = _findEmptySlot(field, 0, 4); // Lính
+        units.add(MapEntry(i, card));
       } else if (card is SpellCardModel) {
-        emptyIndex = _findEmptySlot(field, 5, 9); // Phép
+        spells.add(MapEntry(i, card));
       }
+    }
 
-      if (emptyIndex != null) {
+    // Sắp xếp: Unit có chỉ số attack cao lên trước, Spell giữ nguyên (hoặc có thể sắp nếu muốn)
+    units.sort((a, b) => b.value.attackPower.compareTo(a.value.attackPower));
+
+    // === Đặt 1 Unit ===
+    if (units.isNotEmpty) {
+      final unit = units.first;
+      final unitIndex = unit.key;
+      final fieldIndex = _findEmptySlot(onFieldP1, 0, 4);
+      if (fieldIndex != null) {
         final context = Get.overlayContext;
         if (context != null) {
-          selectedCardIndex.value = i;
-          placeCardOnField(player: Player.player1, fieldIndex: emptyIndex, context: context);
+          selectedCardIndex.value = unitIndex;
+          placeCardOnField(player: Player.player1, fieldIndex: fieldIndex, context: context);
           await Future.delayed(const Duration(milliseconds: 600));
-          break; // Đặt 1 lá mỗi lượt
         }
       }
     }
 
-    // 3. Tấn công nếu có thể
+    // === Đặt tối đa 2 Spell ===
+    int spellPlaced = 0;
+    for (final spellEntry in spells) {
+      if (spellPlaced >= 2) break;
+      final spellIndex = spellEntry.key;
+      final fieldIndex = _findEmptySlot(onFieldP1, 5, 9);
+      if (fieldIndex != null) {
+        final context = Get.overlayContext;
+        if (context != null) {
+          selectedCardIndex.value = spellIndex;
+          placeCardOnField(player: Player.player1, fieldIndex: fieldIndex, context: context);
+          await Future.delayed(const Duration(milliseconds: 500));
+          spellPlaced++;
+        }
+      }
+    }
+
+    // === Tấn công ===
     for (int attackerIndex = 0; attackerIndex < onFieldP1.length; attackerIndex++) {
       final attacker = onFieldP1[attackerIndex];
       if (attacker is UnitCardModel && attacker.attackAttempt > 0) {
@@ -278,26 +346,26 @@ class BattleController extends GetxController {
           final target = onFieldP2[targetIndex];
           if (target is UnitCardModel) {
             selectedAttackerIndex.value = attackerIndex;
-            await Future.delayed(const Duration(milliseconds: 500)); // Delay giữa các đòn tấn công
+            await Future.delayed(const Duration(milliseconds: 500));
             attack(
               attackerPlayer: Player.player1,
               attackerIndex: attackerIndex,
               targetIndex: targetIndex,
             );
-            selectedAttackerIndex.value = -1; // Clear selection after attack
-            break;
+            selectedAttackerIndex.value = -1;
+            break; // Tấn công 1 lần
           }
         }
       }
     }
 
-    // 4. Kết thúc lượt
     await Future.delayed(const Duration(milliseconds: 400));
     currentTurn.value = Player.player2;
-    print('[AI] ---- Turn End ----');
+    if (kDebugMode) print('[AI] ---- Turn End ----');
 
     _isAITurnRunning = false;
   }
+
 
 
 
@@ -334,6 +402,8 @@ class BattleController extends GetxController {
         card.onActive?.call(battleContext, Player.player1);
       }
     }
+    turnCount.value++;
+    showTurnDialog(turnCount.value);
   }
 
   void selectAttacker(int index) {
@@ -341,7 +411,9 @@ class BattleController extends GetxController {
     final card = onFieldP2[index];
     if (card is UnitCardModel) {
       selectedAttackerIndex.value = index;
-      print('Player 2 selected attacker at index $index');
+      if (kDebugMode) {
+        print('Player 2 selected attacker at index $index');
+      }
     }
   }
 
@@ -387,15 +459,21 @@ class BattleController extends GetxController {
     final targetCard = targetField.elementAtOrNull(targetIndex);
 
     if (attackerCard is! UnitCardModel) {
-      print('No valid attacker at index $attackerIndex');
+      if (kDebugMode) {
+        print('No valid attacker at index $attackerIndex');
+      }
       return;
     } else {
       if (attackerCard.attackAttempt <= 0) {
-        print('Attacker ${attackerCard.name} has no attack attempts left.');
+        if (kDebugMode) {
+          print('Attacker ${attackerCard.name} has no attack attempts left.');
+        }
         return;
       }
       if (targetCard is! UnitCardModel) {
-        print('No valid target at index $targetIndex');
+        if (kDebugMode) {
+          print('No valid target at index $targetIndex');
+        }
         return;
       }
 
@@ -403,9 +481,11 @@ class BattleController extends GetxController {
 
       // Tấn công!
       targetCard.currentHealthPoints -= attackerCard.currentAttackPower;
-      print(
+      if (kDebugMode) {
+        print(
           '[ATTACK] ${attackerPlayer.name}\'s ${attackerCard.name} attacked ${targetPlayer.name}\'s ${targetCard.name} '
               'for ${attackerCard.currentAttackPower} damage. Target HP: ${targetCard.currentHealthPoints}');
+      }
 
       // Nếu mục tiêu chết
       if (targetCard.currentHealthPoints <= 0) {
@@ -432,6 +512,109 @@ class BattleController extends GetxController {
     field.refresh();
     debugPrint('[TURN] Reset attackAttempt for ${player.name}');
   }
+  void showTurnDialog(int turnNumber) {
+    final overlay = Overlay.of(battleContext);
+    late final OverlayEntry overlayEntry;
+
+    final controller = AnimationController(
+      vsync: Navigator.of(battleContext),
+      duration: const Duration(milliseconds: 2200),
+    );
+
+    final slideIn = Tween<Offset>(
+      begin: const Offset(-1.5, 0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0.0, 0.3, curve: Curves.easeOut),
+      ),
+    );
+
+    final slideOut = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(-1.5, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0.6, 1.0, curve: Curves.easeIn),
+      ),
+    );
+
+    final opacity = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0.7, 1.0, curve: Curves.easeOut),
+      ),
+    );
+
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Material(
+          color: Colors.transparent,
+          child: AnimatedBuilder(
+            animation: controller,
+            builder: (context, child) {
+              // Gộp slideIn và slideOut thành một hiệu ứng trượt
+              final slide = controller.value < 0.6
+                  ? slideIn.value
+                  : slideOut.value;
+
+              return Opacity(
+                opacity: opacity.value,
+                child: Transform.translate(
+                  offset: slide * MediaQuery.of(context).size.width,
+                  child: Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                      decoration: BoxDecoration(
+                        color: Colors.blueAccent.withOpacity(0.8),
+                      ),
+                      child: Text(
+                        'Turn $turnNumber',
+                        style: const TextStyle(
+                          fontSize: 52,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 2,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0, 3),
+                              blurRadius: 10,
+                              color: Colors.black54,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+
+    overlay.insert(overlayEntry);
+    controller.forward();
+
+    Future.delayed(const Duration(milliseconds: 2300), () {
+      controller.dispose();
+      overlayEntry.remove();
+    });
+  }
+
+
+
+
+
 
 }
 

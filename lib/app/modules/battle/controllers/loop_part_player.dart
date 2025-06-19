@@ -23,7 +23,7 @@ class LoopPartsPlayer {
     try {
       await _audioPlayer.play(
         AssetSource(_parts[_currentPartIndex]),
-        volume: 0.3,
+        volume: 0.1,
       );
     } catch (e) {
       print('Error playing background music: $e');

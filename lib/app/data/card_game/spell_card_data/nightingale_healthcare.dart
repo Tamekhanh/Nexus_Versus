@@ -18,7 +18,7 @@ final Nightingale_HealthCare = SpellCardModel(
   },
   onAttack: (context) {},
   onDead: (context, player) {
-    onDead(context);
+    onDead(context, player);
   },
   series: ["War of Humankind"],
   onActive: (context, player) {
@@ -79,17 +79,15 @@ Future<void> onActive(BuildContext context, Player player) async {
   }
 }
 
-Future<void> onDead(BuildContext context) async {
+Future<void> onDead(BuildContext context, Player player) async {
   final controller = Get.find<BattleController>();
-  final isPlayer1 = controller.currentTurn.value == Player.player1;
-  final field = isPlayer1 ? controller.onFieldP1 : controller.onFieldP2;
+  final field = controller.getField(player);
 
   try {
     for (int i = 0; i < field.length; i++) {
       final card = field[i];
       if (card is UnitCardModel) {
         if (card.effects?.contains("Nightingale_HealthCare") == true) {
-          card.currentHealthPoints -= 500;
           card.effects!.remove("Nightingale_HealthCare");
         }
       }

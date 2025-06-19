@@ -28,7 +28,7 @@ class BattleView extends GetView<BattleController> {
     });
 
     return Scaffold(
-      body: controller.isLoading == true ?
+      body: controller.isLoading.value == true ?
           Center(child: CircularProgressIndicator(),) :
       Stack(
         children: [
@@ -395,14 +395,36 @@ class BattleView extends GetView<BattleController> {
                 SizedBox(
                   width: cardWidthOnbattle + 64,
                   height: cardWidthOnbattle * (8 / 5) + 64,
-                  child: GestureDetector(
-                    onTap: () {
-                      print('Tapped draw card button');
-                      controller.drawCard(player: Player.player2);
-                    },
-                    child: Container(color: Colors.red),
-                  ),
+                  child: Builder(builder: (buttonContext) {
+                    return GestureDetector(
+                      onTap: () {
+                        final renderBox = buttonContext.findRenderObject() as RenderBox;
+                        final start = renderBox.localToGlobal(Offset.zero);
+                        final handCount = controller.handCardsP2.length;
+                        final endX = (screenWidth - ((handCount) * cardOffset + cardWidth)) / 2 + handCount * cardOffset;
+                        final endY = screenHeight - (screenHeight * 0.27); // vùng bài trên tay nằm phía dưới
+
+                        final end = Offset(endX, endY);
+
+                        controller.drawCardWithAnimation(
+                          player: Player.player2,
+                          start: start,
+                          end: end,
+                        );
+                      },
+                      child: Container(
+                        color: Colors.red,
+                        child: const Center(
+                          child: Text(
+                            'Draw Card',
+                            style: TextStyle(fontSize: 24, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
                 ),
+
               ],
             ),
           ),),
@@ -418,7 +440,15 @@ class BattleView extends GetView<BattleController> {
                   print('Tapped end turn button');
                   controller.endTurn();
                 },
-                child: Container(color: Colors.blue),
+                child: Container(
+                    color: Colors.blue,
+                    child: Center(
+                      child: Text(
+                        'End Turn',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      )
+                    )
+                ),
               ),
             ),
           ),
@@ -435,6 +465,38 @@ class BattleView extends GetView<BattleController> {
             }
             return const SizedBox.shrink();
           }),
+
+          Obx(() {
+            if (!controller.isDrawingCard.value || controller.animatedCard.value == null) {
+              return const SizedBox.shrink();
+            }
+
+            final card = controller.animatedCard.value!;
+            final start = controller.drawCardStartOffset;
+            final end = controller.drawCardEndOffset;
+
+            return TweenAnimationBuilder<Offset>(
+              tween: Tween(begin: start, end: end),
+              duration: const Duration(milliseconds: 400),
+              onEnd: () {
+                // Không cần làm gì thêm ở đây vì controller đã xử lý
+              },
+              builder: (context, value, child) {
+                return Positioned(
+                  left: value.dx,
+                  top: value.dy,
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: card is UnitCardModel
+                        ? UnitCard(isSmall: true, unitCardModel: card)
+                        : SpellCard(isSmall: true, spellCardModel: card as SpellCardModel),
+                  ),
+                );
+              },
+            );
+          }),
+
+
         ],
       ),
     );

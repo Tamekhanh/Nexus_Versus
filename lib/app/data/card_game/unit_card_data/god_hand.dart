@@ -12,7 +12,7 @@ final GodHand = UnitCardModel(
   description: "When this unit is summoned, it unleashes divine wrath — instantly destroying all enemy units with 1000 or less ATK. A harbinger of judgment from beyond the veil.",
   imageUrl: "image_card/unit_card/god_hand.png",
   level: 10,
-  attackPower: 3000,
+  attackPower: 2000,
   healthPoints: 2000,
   onPlace: (context) {
     final controller = Get.find<BattleController>();
@@ -21,7 +21,7 @@ final GodHand = UnitCardModel(
 
     for (int i = 0; i < enemyField.length; i++) {
       final card = enemyField[i];
-      if (card is UnitCardModel && card.currentAttackPower <= 1000) {
+      if (card is UnitCardModel && card.currentAttackPower <= 500) {
         controller.onDead(i, player: isPlayer1 ? Player.player2 : Player.player1);
         enemyField[i] = null;
         if (kDebugMode) {

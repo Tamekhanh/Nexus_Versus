@@ -18,7 +18,7 @@ final WarAndPeace = SpellCardModel(
   },
   onAttack: (context) {},
   onDead: (context, player) {
-    onDead(context);
+    onDead(context, player);
   },
   series: ["Crow"],
 );
@@ -53,10 +53,9 @@ Future<void> onPlace(BuildContext context) async {
   }
 }
 
-Future<void> onDead(BuildContext context) async {
+Future<void> onDead(BuildContext context, Player player) async {
   final controller = Get.find<BattleController>();
-  final isPlayer1 = controller.currentTurn.value == Player.player1;
-  final field = isPlayer1 ? controller.onFieldP1 : controller.onFieldP2;
+  final field = controller.getField(player);
 
   try {
     for (int i = 0; i < field.length; i++) {
